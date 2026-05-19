@@ -1,0 +1,6 @@
+{
+  "name": "CACYOF FPE Membership Portal",
+  "description": "A responsive church website and membership portal for Christ Apostolic Church Youth Fellowship, Federal Polytechnic Ede.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
