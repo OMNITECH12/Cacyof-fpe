@@ -50,6 +50,10 @@ CREATE TABLE notifications (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
+-- NOTE: SUPABASE STORAGE BUCKET SETUP
+-- You MUST create a PUBLIC bucket named 'avatars' in your Supabase project's Storage section
+-- for profile pictures and leader images to work.
+
 -- 5. Leaders Table (Executive Council)
 CREATE TABLE leaders (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
