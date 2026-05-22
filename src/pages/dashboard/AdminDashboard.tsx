@@ -86,13 +86,30 @@ function LeaderManager() {
     try {
       setUploading(true);
       const file = e.target.files[0];
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${leaderId}-${Math.random()}.${fileExt}`;
+      if (!file) return;
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file (JPG, PNG, WebP, etc.).');
+        return;
+      }
+
+      // Validate file size (e.g. 5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size exceeds the 5MB limit.');
+        return;
+      }
+
+      const fileExt = file.name.split('.').pop() || 'png';
+      const fileName = `${leaderId}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = `leaders/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
 
       if (uploadError) throw uploadError;
 
@@ -100,10 +117,14 @@ function LeaderManager() {
         .from('avatars')
         .getPublicUrl(filePath);
 
-      await supabase.from('leaders').update({ image_url: publicUrl }).eq('id', leaderId);
+      const { error: updateError } = await supabase.from('leaders').update({ image_url: publicUrl }).eq('id', leaderId);
+      if (updateError) throw updateError;
+      
       fetchLeaders();
-    } catch (error) {
-      alert('Error uploading leader photo');
+      alert('Leader photo uploaded successfully!');
+    } catch (error: any) {
+      console.error('Error uploading leader photo:', error);
+      alert(`Upload Failed: ${error.message || 'Make sure your "avatars" bucket is created and set to PUBLIC in the Supabase console.'}`);
     } finally {
       setUploading(false);
     }
@@ -218,6 +239,7 @@ function MemberDirectory() {
           new Paragraph({ children: [new TextRun({ text: "Phone: ", bold: true }), new TextRun(m.phone_number || "N/A")] }),
           new Paragraph({ children: [new TextRun({ text: "Department: ", bold: true }), new TextRun(m.department || "N/A")] }),
           new Paragraph({ children: [new TextRun({ text: "Level: ", bold: true }), new TextRun(m.academic_level || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "Student Classification: ", bold: true }), new TextRun(m.student_status || "N/A")] }),
           
           new Paragraph({ text: "" }),
           new Paragraph({
@@ -302,7 +324,14 @@ function MemberDirectory() {
                   </td>
                   <td className="px-10 py-6">
                     <div className="text-sm font-bold text-[#0A2540]">{m.department || 'N/A'}</div>
-                    <div className="text-[10px] uppercase font-bold text-[#D4AF37] tracking-widest">{m.academic_level || 'N/A'}</div>
+                    <div className="flex flex-wrap gap-2 items-center mt-1">
+                      <span className="text-[10px] uppercase font-bold text-[#D4AF37] tracking-widest">{m.academic_level || 'N/A'}</span>
+                      {m.student_status && (
+                        <span className="px-2 py-0.5 text-[9px] bg-[#0A2540]/5 text-[#0A2540] rounded font-bold uppercase tracking-wider border border-[#0A2540]/10">
+                          {m.student_status}
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-10 py-6">
                     <div className="flex items-center justify-center space-x-3">

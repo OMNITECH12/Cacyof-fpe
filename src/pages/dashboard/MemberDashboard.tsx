@@ -64,16 +64,34 @@ function ProfileManagement() {
       const file = e.target.files?.[0];
       if (!file) return;
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file (JPG, PNG, WebP, etc.).');
+        return;
+      }
 
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+      // Validate file size (e.g. 5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size exceeds the 5MB limit.');
+        return;
+      }
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        alert('Session expired. Please sign in again.');
+        return;
+      }
+
+      const fileExt = file.name.split('.').pop() || 'png';
+      const fileName = `${user.id}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = `avatars/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
 
       if (uploadError) throw uploadError;
 
@@ -89,9 +107,10 @@ function ProfileManagement() {
       if (updateError) throw updateError;
       
       setProfile({ ...profile, avatar_url: publicUrl });
-    } catch (error) {
+      alert('Profile picture uploaded successfully!');
+    } catch (error: any) {
        console.error('Error uploading avatar:', error);
-       alert('Error uploading profile picture');
+       alert(`Upload Failed: ${error.message || 'Make sure your "avatars" bucket is created and set to PUBLIC in the Supabase console.'}`);
     } finally {
       setUploading(false);
     }
@@ -125,6 +144,7 @@ function ProfileManagement() {
           full_name: profile.full_name,
           phone_number: profile.phone_number,
           academic_level: profile.academic_level,
+          student_status: profile.student_status,
           department: profile.department,
           hobbies: profile.hobbies,
           mentor_name: profile.mentor_name,
@@ -176,9 +196,14 @@ function ProfileManagement() {
             
             <div className="text-center md:text-left flex-grow">
               <h2 className="text-3xl font-bold text-[#0A2540] mb-2">{profile.full_name || 'Incomplete Profile'}</h2>
-              <div className="flex flex-wrap items-center gap-4 justify-center md:justify-start">
+              <div className="flex flex-wrap items-center gap-3 justify-center md:justify-start">
                 <span className="flex items-center text-gray-400 text-sm italic"><Bell size={14} className="mr-2" /> {profile.email}</span>
                 <span className="px-3 py-1 bg-green-50 text-green-600 rounded-full text-[10px] uppercase font-bold tracking-widest border border-green-100">Activated Member</span>
+                {profile.student_status && (
+                  <span className="px-3 py-1 bg-[#D4AF37]/10 text-[#D4AF37] rounded-full text-[10px] uppercase font-bold tracking-widest border border-[#D4AF37]/20">
+                    {profile.student_status}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -248,6 +273,29 @@ function ProfileManagement() {
                     className="w-full p-4 bg-gray-50 border-0 rounded-2xl outline-none"
                     placeholder="E.g. Computer Science"
                   />
+                </div>
+                
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 ml-1">Student Classification</label>
+                  <div className="grid grid-cols-3 gap-4">
+                    {['Fresher', 'Staylite', 'FYB'].map((status) => {
+                      const isSelected = profile.student_status === status;
+                      return (
+                        <button
+                          key={status}
+                          type="button"
+                          onClick={() => setProfile({ ...profile, student_status: status })}
+                          className={`p-4 rounded-2xl text-xs font-bold uppercase tracking-wider border-2 transition-all text-center ${
+                            isSelected 
+                              ? 'bg-[#0A2540] text-[#D4AF37] border-[#0A2540] shadow-md shadow-[#0A2540]/10' 
+                              : 'bg-gray-50 border-transparent text-gray-500 hover:bg-gray-100'
+                          }`}
+                        >
+                          {status}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>

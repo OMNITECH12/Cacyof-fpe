@@ -7,7 +7,8 @@ CREATE TABLE profiles (
   email TEXT,
   phone_number TEXT,
   role TEXT DEFAULT 'member', -- 'member' or 'admin'
-  academic_level TEXT,
+  academic_level TEXT, -- ND1, ND2, HND1, HND2
+  student_status TEXT, -- 'FYB', 'Fresher', 'Staylite'
   department TEXT,
   hobbies TEXT,
   mentor_name TEXT,
@@ -51,8 +52,32 @@ CREATE TABLE notifications (
 );
 
 -- NOTE: SUPABASE STORAGE BUCKET SETUP
--- You MUST create a PUBLIC bucket named 'avatars' in your Supabase project's Storage section
--- for profile pictures and leader images to work.
+-- 1. Create a PUBLIC bucket named 'avatars' in your Supabase project.
+-- 2. You can also run the following SQL script to set up the bucket and select/insert policies:
+
+-- INSERT INTO storage.buckets (id, name, public) VALUES ('avatars', 'avatars', true) ON CONFLICT (id) DO NOTHING;
+
+-- -- Allow Public Select access to storage items in avatars
+-- CREATE POLICY "Public Access" ON storage.objects FOR SELECT USING (bucket_id = 'avatars');
+
+-- -- Allow Authenticated Users to upload avatars
+-- CREATE POLICY "Insert Owned Avatars" ON storage.objects FOR INSERT WITH CHECK (
+--   bucket_id = 'avatars' AND 
+--   auth.role() = 'authenticated'
+-- );
+
+-- -- Allow Authenticated Users to update their own avatars
+-- CREATE POLICY "Update Owned Avatars" ON storage.objects FOR UPDATE USING (
+--   bucket_id = 'avatars' AND 
+--   auth.role() = 'authenticated'
+-- );
+
+-- -- Allow Authenticated Users to delete their own avatars
+-- CREATE POLICY "Delete Owned Avatars" ON storage.objects FOR DELETE USING (
+--   bucket_id = 'avatars' AND 
+--   auth.role() = 'authenticated'
+-- );
+
 
 -- 5. Leaders Table (Executive Council)
 CREATE TABLE leaders (
