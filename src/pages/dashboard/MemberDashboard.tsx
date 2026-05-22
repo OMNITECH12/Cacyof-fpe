@@ -125,10 +125,35 @@ function ProfileManagement() {
         .eq('id', user.id)
         .single();
       
-      setProfile(data || { email: user.email });
+      const remoteProfile = data || { email: user.email, id: user.id };
+      
+      // Auto-restore draft from localStorage if available
+      const localDraft = localStorage.getItem('cacyof_profile_draft');
+      if (localDraft) {
+        try {
+          const parsed = JSON.parse(localDraft);
+          if (parsed && parsed.id === user.id) {
+            setProfile({ ...remoteProfile, ...parsed, isDraftRestored: true });
+            setLoading(false);
+            return;
+          }
+        } catch (e) {
+          console.error('Error parsing draft:', e);
+        }
+      }
+      
+      setProfile(remoteProfile);
     }
     setLoading(false);
   };
+
+  // Auto-save draft on form input changes
+  useEffect(() => {
+    if (profile && profile.id) {
+      const { isDraftRestored, ...cleanDraft } = profile;
+      localStorage.setItem('cacyof_profile_draft', JSON.stringify(cleanDraft));
+    }
+  }, [profile]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -137,14 +162,22 @@ function ProfileManagement() {
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        alert('Session expired. Please sign in again.');
+        return;
+      }
+
       const { error } = await supabase
         .from('profiles')
         .upsert({
-          id: user?.id,
+          id: user.id,
           full_name: profile.full_name,
           phone_number: profile.phone_number,
           academic_level: profile.academic_level,
           student_status: profile.student_status,
+          church_role: profile.church_role || 'member',
+          church_position: profile.church_position || '',
+          academic_session: profile.academic_session || '',
           department: profile.department,
           hobbies: profile.hobbies,
           mentor_name: profile.mentor_name,
@@ -153,15 +186,21 @@ function ProfileManagement() {
           marital_status: profile.marital_status,
           favorite_quote: profile.favorite_quote,
           favorite_food: profile.favorite_food,
+          email: user.email,
+          role: profile.role || 'member',
           updated_at: new Date().toISOString()
         });
 
       if (error) throw error;
       setSaved(true);
+      localStorage.removeItem('cacyof_profile_draft');
+      if (profile.isDraftRestored) {
+        setProfile((prev: any) => ({ ...prev, isDraftRestored: false }));
+      }
       setTimeout(() => setSaved(false), 3000);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert('Error updating profile');
+      alert(`Error updating profile: ${err.message || 'Please ensure you completed crucial database columns.'}`);
     } finally {
       setSaving(false);
     }
@@ -175,6 +214,22 @@ function ProfileManagement() {
         <h1 className="text-4xl font-bold text-[#0A2540] font-serif italic mb-2">Fellowship Registry</h1>
         <p className="text-gray-400 font-light italic">Your data helps us serve you better in the fellowship.</p>
       </div>
+
+      {profile?.isDraftRestored && (
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-amber-800 text-xs flex items-center justify-between font-medium">
+          <span>⚠️ Unsaved profile changes have been automatically restored from your draft! Click "Capture Updates" to save live.</span>
+          <button 
+            type="button"
+            onClick={() => {
+              localStorage.removeItem('cacyof_profile_draft');
+              setProfile((prev: any) => ({ ...prev, isDraftRestored: false }));
+            }}
+            className="px-3 py-1 bg-amber-200/50 rounded-lg hover:bg-amber-200 text-amber-900 transition-colors uppercase text-[9px] font-bold tracking-wider"
+          >
+            Clear Draft
+          </button>
+        </motion.div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-10">
         <div className="bg-white rounded-[2.5rem] shadow-xl shadow-[#0A2540]/5 overflow-hidden border border-gray-100 p-12">
@@ -265,27 +320,38 @@ function ProfileManagement() {
                     </select>
                   </div>
                 </div>
-                <div>
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Academic Unit</label>
-                  <input 
-                    type="text" value={profile.department || ''} 
-                    onChange={e => setProfile({...profile, department: e.target.value})}
-                    className="w-full p-4 bg-gray-50 border-0 rounded-2xl outline-none"
-                    placeholder="E.g. Computer Science"
-                  />
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Academic Unit</label>
+                    <input 
+                      type="text" value={profile.department || ''} 
+                      onChange={e => setProfile({...profile, department: e.target.value})}
+                      className="w-full p-4 bg-gray-50 border-0 rounded-2xl outline-none font-medium text-sm focus:ring-2 focus:ring-[#D4AF37]"
+                      placeholder="E.g. Computer Science"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Academic Session</label>
+                    <input 
+                      type="text" value={profile.academic_session || ''} 
+                      onChange={e => setProfile({...profile, academic_session: e.target.value})}
+                      className="w-full p-4 bg-gray-50 border-0 rounded-2xl outline-none font-medium text-sm focus:ring-2 focus:ring-[#D4AF37]"
+                      placeholder="E.g. 2024/2025"
+                    />
+                  </div>
                 </div>
                 
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 ml-1">Student Classification</label>
-                  <div className="grid grid-cols-3 gap-4">
-                    {['Fresher', 'Staylite', 'FYB'].map((status) => {
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 ml-1">Student Classification/Status</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {['Fresher', 'Staylite', 'FYB', 'Alumni'].map((status) => {
                       const isSelected = profile.student_status === status;
                       return (
                         <button
                           key={status}
                           type="button"
                           onClick={() => setProfile({ ...profile, student_status: status })}
-                          className={`p-4 rounded-2xl text-xs font-bold uppercase tracking-wider border-2 transition-all text-center ${
+                          className={`p-3.5 rounded-2xl text-xs font-bold uppercase tracking-wider border-2 transition-all text-center ${
                             isSelected 
                               ? 'bg-[#0A2540] text-[#D4AF37] border-[#0A2540] shadow-md shadow-[#0A2540]/10' 
                               : 'bg-gray-50 border-transparent text-gray-500 hover:bg-gray-100'
@@ -341,6 +407,33 @@ function ProfileManagement() {
                     onChange={e => setProfile({...profile, favorite_food: e.target.value})}
                     className="w-full p-4 bg-gray-50 border-0 rounded-2xl outline-none"
                   />
+                </div>
+
+                <div className="pt-6 border-t border-gray-50/50">
+                  <span className="block text-xs font-bold text-[#0A2540] uppercase tracking-[0.15em] mb-4">Church Assignment</span>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[9px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Church Role</label>
+                      <select 
+                        value={profile.church_role || 'member'} 
+                        onChange={e => setProfile({...profile, church_role: e.target.value})}
+                        className="w-full p-3 bg-gray-50 border-0 rounded-xl outline-none text-xs font-medium"
+                      >
+                        <option value="member">Member</option>
+                        <option value="worker">Worker</option>
+                        <option value="executive">Executive</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Office/Position</label>
+                      <input 
+                        type="text" value={profile.church_position || ''} 
+                        onChange={e => setProfile({...profile, church_position: e.target.value})}
+                        className="w-full p-3 bg-gray-50 border-0 rounded-xl outline-none text-xs font-medium"
+                        placeholder="E.g. Ushering, Publicity Sec., Choir"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -452,9 +545,32 @@ function NotificationInbox() {
   }, []);
 
   const fetchNotifications = async () => {
-    const { data } = await supabase.from('notifications').select('*').order('created_at', { ascending: false });
-    setNotifications(data || []);
-    setLoading(false);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      let userStatus = 'General';
+      if (user) {
+        const { data: p } = await supabase
+          .from('profiles')
+          .select('student_status')
+          .eq('id', user.id)
+          .single();
+        if (p?.student_status) {
+          userStatus = p.student_status;
+        }
+      }
+
+      const { data } = await supabase
+        .from('notifications')
+        .select('*')
+        .or(`category.eq.General,category.eq.${userStatus}`)
+        .order('created_at', { ascending: false });
+
+      setNotifications(data || []);
+    } catch (e) {
+      console.error('Error fetching notifications:', e);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading) return <div className="flex py-40 justify-center"><Loader2 className="animate-spin" /></div>;

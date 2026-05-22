@@ -66,10 +66,15 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0 opacity-40">
-          <p className="text-[10px] uppercase tracking-[0.3em]">
-            &copy; {new Date().getFullYear()} CACYOF FPE. All rights reserved.
-          </p>
+        <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
+          <div className="text-center md:text-left space-y-2">
+            <p className="text-[10px] uppercase tracking-[0.3em] opacity-40">
+              &copy; {new Date().getFullYear()} CACYOF FPE. All rights reserved.
+            </p>
+            <p className="text-[9px] uppercase tracking-[0.15em] text-[#D4AF37] opacity-60">
+              Created by CACYOF FPE PUB - OMNITECH MULTICONCEPT INC
+            </p>
+          </div>
           <div className="flex space-x-8 text-[10px] uppercase tracking-[0.2em]">
             <a href="#" className="hover:text-white transition-colors">Privacy</a>
             <a href="#" className="hover:text-white transition-colors">Terms</a>

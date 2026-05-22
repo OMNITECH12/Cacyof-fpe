@@ -14,9 +14,10 @@ import {
   Archive,
   FileText,
   LayoutDashboard,
-  User
+  User,
+  Shield
 } from 'lucide-react';
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } from 'docx';
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, ImageRun, WidthType } from 'docx';
 import { saveAs } from 'file-saver';
 
 export default function AdminDashboard() {
@@ -199,6 +200,11 @@ function MemberDirectory() {
   const [members, setMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [downloadingFYB, setDownloadingFYB] = useState(false);
+  const [downloadingAlumni, setDownloadingAlumni] = useState(false);
+  const [copiedSMS, setCopiedSMS] = useState(false);
+  const [adminEmailInput, setAdminEmailInput] = useState('');
 
   useEffect(() => {
     fetchMembers();
@@ -210,6 +216,67 @@ function MemberDirectory() {
     setLoading(false);
   };
 
+  const handleElevateByEmail = async () => {
+    if (!adminEmailInput || !adminEmailInput.trim()) {
+      alert("Please enter a valid member email first.");
+      return;
+    }
+    const targetEmail = adminEmailInput.trim().toLowerCase();
+    
+    // Find member by email in loaded list
+    const found = members.find(m => m.email?.toLowerCase() === targetEmail);
+    if (!found) {
+      alert(`No member found registered with the email "${targetEmail}" in this system directory.`);
+      return;
+    }
+
+    if (found.role === 'admin') {
+      alert(`"${found.full_name}" is already an Admin.`);
+      return;
+    }
+
+    const confirmMessage = `Promote "${found.full_name}" (${targetEmail}) to Admin? They will have full dashboard administrative controls.`;
+    if (confirm(confirmMessage)) {
+      try {
+        const { error } = await supabase
+          .from('profiles')
+          .update({ role: 'admin' })
+          .eq('id', found.id);
+        
+        if (error) throw error;
+        alert(`Successfully promoted ${found.full_name} to Administrator!`);
+        setAdminEmailInput('');
+        fetchMembers();
+      } catch (err: any) {
+        console.error("Error promoting member:", err);
+        alert(`Failed to promote member: ${err.message}`);
+      }
+    }
+  };
+
+  const toggleAdminRole = async (memberId: string, currentRole: string, fullName: string) => {
+    const newRole = currentRole === 'admin' ? 'member' : 'admin';
+    const confirmMessage = newRole === 'admin' 
+      ? `Promote "${fullName}" to Admin? They will receive full system control privileges.` 
+      : `Demote "${fullName}" from Admin back to a regular Member?`;
+    
+    if (confirm(confirmMessage)) {
+      try {
+         const { error } = await supabase
+          .from('profiles')
+          .update({ role: newRole })
+          .eq('id', memberId);
+        
+        if (error) throw error;
+        alert(`Successfully updated "${fullName}" to ${newRole}!`);
+        fetchMembers();
+      } catch (err: any) {
+        console.error("Error toggling admin status:", err);
+        alert(`Failed to toggle role: ${err.message}`);
+      }
+    }
+  };
+
   const handleDelete = async (id: string, name: string) => {
     if (confirm(`Revoke access and destroy records for ${name}?`)) {
       const { error } = await supabase.from('profiles').delete().eq('id', id);
@@ -217,67 +284,294 @@ function MemberDirectory() {
     }
   };
 
+  const getPhoneNumbersForBulk = () => {
+    const targets = statusFilter === 'All' 
+      ? members 
+      : members.filter(m => m.student_status === statusFilter);
+    return targets
+      .map(m => m.phone_number)
+      .filter(phone => phone && phone.trim() !== '')
+      .join(', ');
+  };
+
+  const copySMSNumbers = () => {
+    const numbers = getPhoneNumbersForBulk();
+    if (!numbers) {
+      alert("No numbers found for this active category.");
+      return;
+    }
+    navigator.clipboard.writeText(numbers);
+    setCopiedSMS(true);
+    setTimeout(() => setCopiedSMS(false), 2000);
+  };
+
+  const downloadAlumniDoc = async () => {
+    const alumniList = members.filter(m => m.student_status === 'Alumni');
+    if (alumniList.length === 0) {
+      alert("No Alumni members found in the current registry.");
+      return;
+    }
+
+    setDownloadingAlumni(true);
+    try {
+      const doc = new Document({
+        sections: [{
+          properties: {},
+          children: [
+            new Paragraph({
+              text: "CACYOF FPE — REGISTERED ALUMNI DIRECTORY",
+              heading: HeadingLevel.HEADING_1,
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 300 }
+            }),
+            new Paragraph({
+              text: `Official Alumni Roster compiled on: ${new Date().toLocaleDateString()}`,
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 400 }
+            }),
+            new Table({
+              width: { size: 100, type: WidthType.PERCENTAGE },
+              rows: [
+                new TableRow({
+                  children: [
+                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Full Name", bold: true })] })] }),
+                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Email", bold: true })] })] }),
+                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Phone Number", bold: true })] })] }),
+                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Academic Session", bold: true })] })] }),
+                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Church Role", bold: true })] })] }),
+                  ]
+                }),
+                ...alumniList.map(m => new TableRow({
+                  children: [
+                    new TableCell({ children: [new Paragraph({ text: m.full_name || "N/A" })] }),
+                    new TableCell({ children: [new Paragraph({ text: m.email || "N/A" })] }),
+                    new TableCell({ children: [new Paragraph({ text: m.phone_number || "N/A" })] }),
+                    new TableCell({ children: [new Paragraph({ text: m.academic_session || "N/A" })] }),
+                    new TableCell({ children: [new Paragraph({ text: m.church_role || "member" })] }),
+                  ]
+                }))
+              ]
+            })
+          ]
+        }]
+      });
+
+      const blob = await Packer.toBlob(doc);
+      saveAs(blob, `CACYOF_Alumni_Roster_${new Date().getFullYear()}.docx`);
+    } catch (e) {
+      console.error(e);
+      alert("Failed to build Alumni Word Directory.");
+    } finally {
+      setDownloadingAlumni(false);
+    }
+  };
+
+  const downloadFYBDoc = async () => {
+    const fybList = members.filter(m => m.student_status === 'FYB');
+    if (fybList.length === 0) {
+      alert("No FYB (Final year brethren) found in the current registry.");
+      return;
+    }
+
+    setDownloadingFYB(true);
+    try {
+      const elements: any[] = [
+        new Paragraph({
+          text: "CACYOF FPE — OFFICIAL FINAL YEAR BRETHREN (FYB) DOSSIER",
+          heading: HeadingLevel.HEADING_1,
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 300 }
+        }),
+        new Paragraph({
+          text: `Generated on: ${new Date().toLocaleDateString()} — Total Finalists: ${fybList.length}`,
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 500 }
+        })
+      ];
+
+      for (const m of fybList) {
+        let imageRun: ImageRun | null = null;
+        if (m.avatar_url) {
+          try {
+            const res = await fetch(m.avatar_url);
+            if (res.ok) {
+              const imgBlob = await res.blob();
+              const buffer = await imgBlob.arrayBuffer();
+              
+              imageRun = new ImageRun({
+                data: buffer,
+                transformation: {
+                  width: 120,
+                  height: 120,
+                },
+                type: 'png'
+              });
+            }
+          } catch (err) {
+            console.warn("Could not load image buffer for " + m.full_name, err);
+          }
+        }
+
+        elements.push(
+          new Paragraph({
+            children: [
+              new TextRun({ text: `${m.full_name?.toUpperCase() || 'NAME NOT SPECIFIED'}`, bold: true, size: 28, color: "0A2540" })
+            ],
+            spacing: { before: 200, after: 150 }
+          })
+        );
+
+        if (imageRun) {
+          elements.push(
+            new Paragraph({
+              children: [imageRun],
+              spacing: { after: 150 }
+            })
+          );
+        } else {
+          elements.push(
+            new Paragraph({
+              children: [new TextRun({ text: "[No Profile Picture uploaded or image fetch restricted by CORS]", italics: true, color: "888888" })],
+              spacing: { after: 150 }
+            })
+          );
+        }
+
+        elements.push(
+          new Paragraph({ children: [new TextRun({ text: "Email: ", bold: true }), new TextRun(m.email || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "Phone Contact: ", bold: true }), new TextRun(m.phone_number || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "Academic Unit (Dept): ", bold: true }), new TextRun(m.department || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "Academic Session: ", bold: true }), new TextRun(m.academic_session || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "Level: ", bold: true }), new TextRun(m.academic_level || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "Church Role: ", bold: true }), new TextRun(`${m.church_role || 'member'}  (${m.church_position || 'No active position'})`)] }),
+          new Paragraph({ children: [new TextRun({ text: "Assigned Mentor: ", bold: true }), new TextRun(m.mentor_name || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "Career Ambition: ", bold: true }), new TextRun(m.career_path || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "Business Venture: ", bold: true }), new TextRun(m.entrepreneurship_path || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "Favorite Nourishment: ", bold: true }), new TextRun(m.favorite_food || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "Favorite Quote: ", bold: true }), new TextRun({ text: `"${m.favorite_quote || 'N/A'}"`, italics: true })] }),
+          new Paragraph({
+            text: "═".repeat(60),
+            spacing: { before: 250, after: 400 }
+          })
+        );
+      }
+
+      const doc = new Document({
+        sections: [{
+          properties: {},
+          children: elements
+        }]
+      });
+
+      const blob = await Packer.toBlob(doc);
+      saveAs(blob, `CACYOF_FYB_Finalists_Portfolio_${new Date().getFullYear()}.docx`);
+    } catch (error) {
+      console.error(error);
+      alert("Error building FYB word document portfolio");
+    } finally {
+      setDownloadingFYB(false);
+    }
+  };
+
   const generateWordDoc = async (m: any) => {
+    let imageRun: ImageRun | null = null;
+    if (m.avatar_url) {
+      try {
+        const res = await fetch(m.avatar_url);
+        if (res.ok) {
+          const imgBlob = await res.blob();
+          const buffer = await imgBlob.arrayBuffer();
+          imageRun = new ImageRun({
+            data: buffer,
+            transformation: { width: 110, height: 110 },
+            type: 'png'
+          });
+        }
+      } catch (e) {
+        console.warn("Skip embedding image on failure", e);
+      }
+    }
+
+    const docElements: any[] = [
+      new Paragraph({
+         text: "CACYOF FPE — OFFICIAL MEMBER RECORD",
+         heading: HeadingLevel.HEADING_1,
+         alignment: AlignmentType.CENTER,
+         spacing: { after: 300 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: "INDIVIDUAL IDENTITY DETAILS", bold: true, size: 28, color: "0A2540" }),
+        ],
+        spacing: { after: 200 }
+      })
+    ];
+
+    if (imageRun) {
+      docElements.push(new Paragraph({ children: [imageRun], spacing: { after: 200 } }));
+    }
+
+    docElements.push(
+      new Paragraph({ children: [new TextRun({ text: "Full Name: ", bold: true }), new TextRun(m.full_name || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "Email: ", bold: true }), new TextRun(m.email || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "Phone Line: ", bold: true }), new TextRun(m.phone_number || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "Department: ", bold: true }), new TextRun(m.department || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "Academic Session: ", bold: true }), new TextRun(m.academic_session || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "Level: ", bold: true }), new TextRun(m.academic_level || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "Student Status: ", bold: true }), new TextRun(m.student_status || "N/A")] }),
+      
+      new Paragraph({ text: "", spacing: { after: 200 } }),
+      new Paragraph({
+        children: [new TextRun({ text: "CHURCH IDENTITY & ASSIGNMENT", bold: true, size: 28, color: "0A2540" })],
+        spacing: { after: 200 }
+      }),
+      new Paragraph({ children: [new TextRun({ text: "Church Role: ", bold: true }), new TextRun(m.church_role || "member")] }),
+      new Paragraph({ children: [new TextRun({ text: "Church Office: ", bold: true }), new TextRun(m.church_position || "N/A")] }),
+
+      new Paragraph({ text: "", spacing: { after: 200 } }),
+      new Paragraph({
+        children: [new TextRun({ text: "VISION & INTERESTS", bold: true, size: 28, color: "0A2540" })],
+        spacing: { after: 200 }
+      }),
+      new Paragraph({ children: [new TextRun({ text: "Career Path: ", bold: true }), new TextRun(m.career_path || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "Entrepreneurship: ", bold: true }), new TextRun(m.entrepreneurship_path || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "Assigned Mentor: ", bold: true }), new TextRun(m.mentor_name || "N/A")] }),
+      
+      new Paragraph({ text: "", spacing: { after: 200 } }),
+      new Paragraph({
+        children: [new TextRun({ text: "PERSONAL INSIGHT", bold: true, size: 28, color: "0A2540" })],
+        spacing: { after: 200 }
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: "Favorite Food: ", bold: true }), new TextRun(m.favorite_food || "N/A"),
+        ]
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: "Favorite Quote: ", bold: true }), 
+          new TextRun({ text: `"${m.favorite_quote || 'N/A'}"`, italics: true }),
+        ]
+      })
+    );
+
     const doc = new Document({
       sections: [{
         properties: {},
-        children: [
-          new Paragraph({
-             text: "CACYOF FPE — OFFICIAL MEMBER RECORD",
-             heading: HeadingLevel.HEADING_1,
-             alignment: AlignmentType.CENTER,
-             spacing: { after: 400 }
-          }),
-          new Paragraph({
-            children: [
-              new TextRun({ text: "INDIVIDUAL IDENTITY", bold: true, size: 28 }),
-            ],
-            spacing: { after: 200 }
-          }),
-          new Paragraph({ children: [new TextRun({ text: "Full Name: ", bold: true }), new TextRun(m.full_name || "N/A")] }),
-          new Paragraph({ children: [new TextRun({ text: "Email: ", bold: true }), new TextRun(m.email || "N/A")] }),
-          new Paragraph({ children: [new TextRun({ text: "Phone: ", bold: true }), new TextRun(m.phone_number || "N/A")] }),
-          new Paragraph({ children: [new TextRun({ text: "Department: ", bold: true }), new TextRun(m.department || "N/A")] }),
-          new Paragraph({ children: [new TextRun({ text: "Level: ", bold: true }), new TextRun(m.academic_level || "N/A")] }),
-          new Paragraph({ children: [new TextRun({ text: "Student Classification: ", bold: true }), new TextRun(m.student_status || "N/A")] }),
-          
-          new Paragraph({ text: "" }),
-          new Paragraph({
-            children: [new TextRun({ text: "VISION & INTERESTS", bold: true, size: 28 })],
-            spacing: { after: 200 }
-          }),
-          new Paragraph({ children: [new TextRun({ text: "Career Path: ", bold: true }), new TextRun(m.career_path || "N/A")] }),
-          new Paragraph({ children: [new TextRun({ text: "Entrepreneurship: ", bold: true }), new TextRun(m.entrepreneurship_path || "N/A")] }),
-          new Paragraph({ children: [new TextRun({ text: "Assigned Mentor: ", bold: true }), new TextRun(m.mentor_name || "N/A")] }),
-          
-          new Paragraph({ text: "" }),
-          new Paragraph({
-            children: [new TextRun({ text: "PERSONAL INSIGHT", bold: true, size: 28 })],
-            spacing: { after: 200 }
-          }),
-          new Paragraph({
-            children: [
-              new TextRun({ text: "Favorite Food: ", bold: true }), new TextRun(m.favorite_food || "N/A"),
-            ]
-          }),
-          new Paragraph({
-            children: [
-              new TextRun({ text: "Favorite Quote: ", bold: true }), 
-              new TextRun({ text: `"${m.favorite_quote || 'N/A'}"`, italics: true }),
-            ]
-          }),
-        ],
+        children: docElements,
       }],
     });
 
     const blob = await Packer.toBlob(doc);
-    saveAs(blob, `Member_${m.full_name.replace(/\s/g, '_')}.docx`);
+    saveAs(blob, `Member_${m.full_name?.replace(/\s/g, '_') || 'Profile'}.docx`);
   };
 
-  const filtered = members.filter(m => 
-    m.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    m.department?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filtered = members.filter(m => {
+    const matchesSearch = m.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          m.department?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'All' || m.student_status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
@@ -296,34 +590,148 @@ function MemberDirectory() {
         </div>
       </div>
 
+      {/* Category Tabs */}
+      <div className="flex flex-wrap items-center gap-2 border-b border-gray-100 pb-2">
+        {['All', 'Fresher', 'Staylite', 'FYB', 'Alumni'].map((cat) => {
+          const count = cat === 'All' 
+            ? members.length 
+            : members.filter(m => m.student_status === cat).length;
+          const isActive = statusFilter === cat;
+          return (
+            <button
+              key={cat}
+              onClick={() => setStatusFilter(cat)}
+              className={`flex items-center space-x-2 px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 border-2 ${
+                isActive 
+                  ? 'bg-[#0A2540] text-[#D4AF37] border-[#0A2540] shadow-md shadow-[#0A2540]/10' 
+                  : 'bg-white border-transparent text-gray-400 hover:text-gray-600'
+              }`}
+            >
+              <span>{cat}</span>
+              <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${isActive ? 'bg-[#D4AF37]/20 text-[#D4AF37]' : 'bg-gray-100 text-gray-400'}`}>
+                {count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Download Actions & SMS copiers */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="col-span-1 lg:col-span-2 bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
+          <div className="mb-4">
+            <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-[#0A2540]">Dossier & Roster Archives</h4>
+            <p className="text-[11px] text-gray-400 font-light mt-0.5">Acquire compiled documentation formats offline.</p>
+          </div>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={downloadFYBDoc}
+              disabled={downloadingFYB || members.filter(m => m.student_status === 'FYB').length === 0}
+              className="flex items-center justify-center space-x-3 bg-[#0A2540] text-[#D4AF37] py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-opacity-95 disabled:opacity-50 transition-all shadow-sm"
+              title="Download all FYBs with profile photos in high quality Doc"
+            >
+              {downloadingFYB ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <Download size={16} />
+              )}
+              <span>Download FYB Dossier (with Images)</span>
+            </button>
+
+            <button
+              onClick={downloadAlumniDoc}
+              disabled={downloadingAlumni || members.filter(m => m.student_status === 'Alumni').length === 0}
+              className="flex items-center justify-center space-x-3 bg-[#D4AF37] text-[#0A2540] py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-opacity-95 disabled:opacity-50 transition-all shadow-sm"
+              title="Download entire list of alumni in a table"
+            >
+              {downloadingAlumni ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <Download size={16} />
+              )}
+              <span>Download Alumni Members list</span>
+            </button>
+          </div>
+        </div>
+
+        {/* SMS Extract */}
+        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
+          <div className="mb-4">
+            <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-[#0A2540]">Bulk Phone Extract ({statusFilter})</h4>
+            <p className="text-[11px] text-gray-400 font-light mt-0.5">Directly copy list-format contacts for carrier transmission.</p>
+          </div>
+          <button
+            onClick={copySMSNumbers}
+            disabled={!getPhoneNumbersForBulk()}
+            className="w-full flex items-center justify-center space-x-2 py-3.5 bg-[#D4AF37]/10 text-[#0A2540] border border-[#D4AF37]/30 hover:bg-[#D4AF37]/20 rounded-xl font-extrabold text-[11px] uppercase tracking-wider transition-all disabled:opacity-40"
+          >
+            {copiedSMS ? <Check size={14} className="text-green-600 animate-bounce" /> : <Send size={14} className="text-[#0A2540]" />}
+            <span>{copiedSMS ? 'Numbers Copied!' : 'Copy SMS Contacts'}</span>
+          </button>
+        </div>
+
+        {/* Promote Member to Admin */}
+        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
+          <div className="mb-4">
+            <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-[#0A2540]">Promote New Admin</h4>
+            <p className="text-[11px] text-gray-400 font-light mt-0.5">Elevate any registered member to Administrator by their email.</p>
+          </div>
+          <div className="space-y-2">
+            <input 
+              type="email" 
+              placeholder="E.g. member@email.com" 
+              value={adminEmailInput} 
+              onChange={e => setAdminEmailInput(e.target.value)}
+              className="w-full p-2.5 bg-gray-50 border border-gray-100 rounded-xl text-xs outline-none focus:ring-2 focus:ring-[#D4AF37] transition-all"
+            />
+            <button
+              onClick={handleElevateByEmail}
+              className="w-full py-2.5 bg-[#0A2540] text-[#D4AF37] hover:bg-opacity-95 rounded-xl font-bold text-xs uppercase transition-all flex items-center justify-center space-x-2 shadow-sm"
+              title="Grant Admin Rights"
+            >
+              <Shield size={14} />
+              <span>Grant Admin Rights</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div className="bg-white rounded-[2.5rem] shadow-xl shadow-[#0A2540]/5 overflow-hidden border border-gray-100">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead className="bg-gray-50/50 border-b border-gray-50">
               <tr>
                 <th className="px-10 py-6 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">Divine Identity</th>
-                <th className="px-10 py-6 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">Academic Unit</th>
+                <th className="px-10 py-6 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">Academic Unit & Church</th>
                 <th className="px-10 py-6 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 text-center">Protocol</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {loading ? (
                 <tr><td colSpan={3} className="px-10 py-20 text-center"><Loader2 className="animate-spin inline text-[#D4AF37]" size={32} /></td></tr>
+              ) : filtered.length === 0 ? (
+                <tr><td colSpan={3} className="px-10 py-20 text-center text-gray-300 font-light italic">No registered members found under this selection.</td></tr>
               ) : filtered.map((m) => (
                 <tr key={m.id} className="hover:bg-gray-50/50 transition-colors group">
                   <td className="px-10 py-6">
                     <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-xl bg-[#0A2540]/5 flex items-center justify-center text-[#0A2540] font-bold text-lg italic">
-                        {m.full_name?.[0] || 'M'}
-                      </div>
+                      {m.avatar_url ? (
+                        <div className="w-12 h-12 rounded-xl overflow-hidden border border-gray-100 shadow-sm shrink-0">
+                          <img src={m.avatar_url} className="w-full h-full object-cover" />
+                        </div>
+                      ) : (
+                        <div className="w-12 h-12 rounded-xl bg-[#0A2540]/5 flex items-center justify-center text-[#0A2540] font-bold text-lg italic shrink-0">
+                          {m.full_name?.[0] || 'M'}
+                        </div>
+                      )}
                       <div>
                         <div className="font-bold text-[#0A2540] text-lg">{m.full_name}</div>
-                        <div className="text-xs text-gray-400 font-light italic">{m.email} — {m.phone_number}</div>
+                        <div className="text-xs text-gray-400 font-light italic">{m.email} — {m.phone_number || 'No contact phone'}</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-10 py-6">
-                    <div className="text-sm font-bold text-[#0A2540]">{m.department || 'N/A'}</div>
+                    <div className="text-sm font-bold text-[#0A2540]">{m.department || 'N/A'} {m.academic_session && `(${m.academic_session})`}</div>
                     <div className="flex flex-wrap gap-2 items-center mt-1">
                       <span className="text-[10px] uppercase font-bold text-[#D4AF37] tracking-widest">{m.academic_level || 'N/A'}</span>
                       {m.student_status && (
@@ -331,10 +739,35 @@ function MemberDirectory() {
                           {m.student_status}
                         </span>
                       )}
+                      {m.church_role && m.church_role !== 'member' && (
+                        <span className="px-2 py-0.5 text-[9px] bg-amber-50 text-amber-600 rounded font-bold uppercase tracking-wider border border-amber-200">
+                          {m.church_role} {m.church_position && `— ${m.church_position}`}
+                        </span>
+                      )}
+                      {m.role === 'admin' ? (
+                        <span className="px-2 py-0.5 text-[9px] bg-purple-50 text-purple-700 rounded font-bold uppercase tracking-wider border border-purple-200 flex items-center gap-1">
+                          <Shield size={10} className="text-purple-600" /> Admin
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 text-[9px] bg-slate-50 text-slate-500 rounded font-bold uppercase tracking-wider border border-slate-100">
+                          Member
+                        </span>
+                      )}
                     </div>
                   </td>
                   <td className="px-10 py-6">
                     <div className="flex items-center justify-center space-x-3">
+                      <button 
+                        onClick={() => toggleAdminRole(m.id, m.role, m.full_name)}
+                        className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all shadow-sm ${
+                          m.role === 'admin' 
+                            ? 'text-purple-600 bg-purple-50 hover:bg-[#0A2540] hover:text-[#D4AF37]' 
+                            : 'text-gray-400 bg-gray-50 hover:bg-purple-600 hover:text-white'
+                        }`}
+                        title={m.role === 'admin' ? "Demote to Member" : "Promote to Admin"}
+                      >
+                        <Shield size={18} />
+                      </button>
                       <button 
                         onClick={() => generateWordDoc(m)}
                         className="w-10 h-10 flex items-center justify-center text-blue-500 bg-blue-50 rounded-xl hover:bg-blue-500 hover:text-white transition-all shadow-sm"
@@ -457,13 +890,14 @@ function BlogManager() {
 function NotificationBroadcaster() {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
+  const [category, setCategory] = useState('General');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.from('notifications').insert([{ title, body }]);
+    const { error } = await supabase.from('notifications').insert([{ title, body, category }]);
     if (!error) {
       setSent(true); setTitle(''); setBody('');
       setTimeout(() => setSent(false), 5000);
@@ -478,11 +912,33 @@ function NotificationBroadcaster() {
           <Send className="text-[#D4AF37]" size={40} />
         </div>
         <h1 className="text-4xl font-bold text-[#0A2540] font-serif italic mb-3">Announcement Desk</h1>
-        <p className="text-gray-400 font-light">Broadcast words instantly to every member's dashboard.</p>
+        <p className="text-gray-400 font-light">Broadcast words instantly to target member categories in the fellowship.</p>
       </div>
 
       <div className="bg-white p-12 rounded-[3.5rem] shadow-2xl shadow-[#0A2540]/10 border border-gray-100 italic">
         <form onSubmit={handleSend} className="space-y-10">
+          <div>
+            <label className="block text-[10px] font-bold text-[#0A2540] uppercase tracking-[0.3em] mb-4 text-center">Target Audience Category</label>
+            <div className="flex flex-wrap justify-center gap-2 max-w-lg mx-auto mb-4">
+              {['General', 'Fresher', 'Staylite', 'FYB', 'Alumni'].map((cat) => {
+                const isActive = category === cat;
+                return (
+                  <button
+                    key={cat} type="button"
+                    onClick={() => setCategory(cat)}
+                    className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border-2 transition-all duration-300 ${
+                      isActive 
+                        ? 'bg-[#0A2540] text-[#D4AF37] border-[#0A2540] shadow-md shadow-[#0A2540]/10' 
+                        : 'bg-gray-50 border-transparent text-gray-400 hover:bg-gray-100'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <div>
             <label className="block text-[10px] font-bold text-[#0A2540] uppercase tracking-[0.3em] mb-4 text-center">Subject Header</label>
             <input 
@@ -501,16 +957,16 @@ function NotificationBroadcaster() {
           </div>
 
           {sent && (
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="p-4 bg-green-50 text-green-700 rounded-2xl text-center font-bold flex items-center justify-center">
-              <Check className="mr-2" /> Broadcast Successfully Dispatched!
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="p-4 bg-green-50 text-green-700 rounded-2xl text-center font-bold flex items-center justify-center font-sans not-italic text-sm">
+              <Check className="mr-2 text-green-600" /> Broadcast Successfully Dispatched!
             </motion.div>
           )}
 
           <button 
             disabled={loading}
-            className="w-full py-6 bg-[#0A2540] text-[#D4AF37] rounded-3xl font-bold text-2xl hover:scale-[1.02] active:scale-95 transition-all shadow-2xl shadow-[#0A2540]/30"
+            className="w-full py-6 bg-[#0A2540] text-[#D4AF37] rounded-3xl font-bold text-2xl hover:scale-[1.02] active:scale-95 transition-all shadow-2xl shadow-[#0A2540]/30 font-sans not-italic"
           >
-            {loading ? <Loader2 className="animate-spin inline" /> : 'Execute Broadcast Now'}
+            {loading ? <Loader2 className="animate-spin inline" /> : `Execute Broadcast to ${category}`}
           </button>
         </form>
       </div>
