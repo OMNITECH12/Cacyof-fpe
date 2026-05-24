@@ -337,6 +337,7 @@ function MemberDirectory() {
                     new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Full Name", bold: true })] })] }),
                     new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Email", bold: true })] })] }),
                     new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Phone Number", bold: true })] })] }),
+                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Contact Address", bold: true })] })] }),
                     new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Academic Session", bold: true })] })] }),
                     new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Church Role", bold: true })] })] }),
                   ]
@@ -346,6 +347,7 @@ function MemberDirectory() {
                     new TableCell({ children: [new Paragraph({ text: m.full_name || "N/A" })] }),
                     new TableCell({ children: [new Paragraph({ text: m.email || "N/A" })] }),
                     new TableCell({ children: [new Paragraph({ text: m.phone_number || "N/A" })] }),
+                    new TableCell({ children: [new Paragraph({ text: m.contact_address || "N/A" })] }),
                     new TableCell({ children: [new Paragraph({ text: m.academic_session || "N/A" })] }),
                     new TableCell({ children: [new Paragraph({ text: m.church_role || "member" })] }),
                   ]
@@ -626,7 +628,7 @@ function MemberDirectory() {
           <div className="flex flex-col gap-3">
             <button
               onClick={downloadFYBDoc}
-              disabled={downloadingFYB || members.filter(m => m.student_status === 'FYB').length === 0}
+              disabled={downloadingFYB}
               className="flex items-center justify-center space-x-3 bg-[#0A2540] text-[#D4AF37] py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-opacity-95 disabled:opacity-50 transition-all shadow-sm"
               title="Download all FYBs with profile photos in high quality Doc"
             >
@@ -640,7 +642,7 @@ function MemberDirectory() {
 
             <button
               onClick={downloadAlumniDoc}
-              disabled={downloadingAlumni || members.filter(m => m.student_status === 'Alumni').length === 0}
+              disabled={downloadingAlumni}
               className="flex items-center justify-center space-x-3 bg-[#D4AF37] text-[#0A2540] py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-opacity-95 disabled:opacity-50 transition-all shadow-sm"
               title="Download entire list of alumni in a table"
             >
@@ -977,6 +979,7 @@ function NotificationBroadcaster() {
 function QuoteReviewer() {
   const [quotes, setQuotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => { fetchQuotes(); }, []);
   const fetchQuotes = async () => {
@@ -990,11 +993,80 @@ function QuoteReviewer() {
     fetchQuotes();
   };
 
+  const downloadQuotesDoc = async () => {
+    if (quotes.length === 0) {
+      alert("No quotes found to download.");
+      return;
+    }
+
+    setDownloading(true);
+    try {
+      const doc = new Document({
+        sections: [{
+          properties: {},
+          children: [
+            new Paragraph({
+              text: "CACYOF FPE — FELLOWSHIP INSIGHTS & QUOTES DOSSIER",
+              heading: HeadingLevel.HEADING_1,
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 300 }
+            }),
+            new Paragraph({
+              text: `Official Quotes Registry compiled on: ${new Date().toLocaleDateString()}`,
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 400 }
+            }),
+            new Table({
+              width: { size: 100, type: WidthType.PERCENTAGE },
+              rows: [
+                new TableRow({
+                  children: [
+                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Submitted By", bold: true })] })] }),
+                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Insight Quote Statement", bold: true })] })] }),
+                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Status", bold: true })] })] }),
+                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Date Submitted", bold: true })] })] }),
+                  ]
+                }),
+                ...quotes.map(q => new TableRow({
+                  children: [
+                    new TableCell({ children: [new Paragraph({ text: q.author_name || "Anonymous" })] }),
+                    new TableCell({ children: [new Paragraph({ text: `"${q.text}"` })] }),
+                    new TableCell({ children: [new Paragraph({ text: q.status || "pending" })] }),
+                    new TableCell({ children: [new Paragraph({ text: new Date(q.created_at).toLocaleDateString() })] }),
+                  ]
+                }))
+              ]
+            })
+          ]
+        }]
+      });
+
+      const blob = await Packer.toBlob(doc);
+      saveAs(blob, `CACYOF_Quotes_Registry_${new Date().getFullYear()}.docx`);
+    } catch (e) {
+      console.error(e);
+      alert("Failed to build Quotes Word Dossier.");
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
     <div className="space-y-10">
-      <div>
-        <h1 className="text-4xl font-bold text-[#0A2540] font-serif italic mb-2">Quote Moderator</h1>
-        <p className="text-gray-400 font-light italic">Review the insights shared by our youth before public exposure.</p>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-bold text-[#0A2540] font-serif italic mb-2">Quote Moderator</h1>
+          <p className="text-gray-400 font-light italic text-sm">Review the insights shared by our youth before public exposure.</p>
+        </div>
+        <button
+          onClick={downloadQuotesDoc}
+          disabled={downloading}
+          className="flex items-center space-x-2 bg-[#0A2540] text-[#D4AF37] px-5 py-3 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-opacity-95 transition-all shadow-md shrink-0 disabled:opacity-50"
+          title="Download all members' quotes in Doc format"
+        >
+          {downloading ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+          <span>Download Quotes Dossier</span>
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

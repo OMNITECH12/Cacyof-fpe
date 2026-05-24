@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom';
 import Sidebar from '../../components/dashboard/Sidebar';
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
@@ -13,11 +13,53 @@ import {
   CheckCircle2,
   Calendar,
   Phone,
-  LayoutDashboard
+  LayoutDashboard,
+  MapPin,
+  BookOpen,
+  ArrowRight
 } from 'lucide-react';
 
 export default function MemberDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [newAnnouncement, setNewAnnouncement] = useState<any>(null);
+
+  useEffect(() => {
+    const checkNewAnnouncements = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        let userStatus = 'General';
+        if (user) {
+          const { data: p } = await supabase
+            .from('profiles')
+            .select('student_status')
+            .eq('id', user.id)
+            .single();
+          if (p?.student_status) {
+            userStatus = p.student_status;
+          }
+        }
+
+        const { data } = await supabase
+          .from('notifications')
+          .select('*')
+          .or(`category.eq.General,category.eq.${userStatus}`)
+          .order('created_at', { ascending: false })
+          .limit(1);
+
+        if (data && data.length > 0) {
+          const latest = data[0];
+          const lastViewedId = localStorage.getItem('last_viewed_notification_id');
+          if (lastViewedId !== latest.id) {
+            setNewAnnouncement(latest);
+          }
+        }
+      } catch (err) {
+        console.error('Error checking announcements:', err);
+      }
+    };
+
+    checkNewAnnouncements();
+  }, []);
 
   return (
     <div className="flex bg-[#F8FAFC] min-h-[calc(100vh-80px)] relative">
@@ -36,6 +78,43 @@ export default function MemberDashboard() {
           </button>
         </div>
         <div className="max-w-6xl mx-auto">
+          {newAnnouncement && (
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-8 p-5 bg-[#D4AF37]/10 border-2 border-[#D4AF37]/30 text-[#0A2540] rounded-2xl flex flex-col md:flex-row items-center justify-between shadow-sm"
+            >
+              <div className="flex items-center space-x-3 text-sm font-medium mb-3 md:mb-0">
+                <span className="text-xl">📢</span>
+                <div>
+                  <span className="font-bold">New Information from Admin:</span>{' '}
+                  <span className="italic font-light">"{newAnnouncement.title}"</span>
+                </div>
+              </div>
+              <div className="flex items-center space-x-4">
+                <Link
+                  to="/dashboard/member/notifications"
+                  onClick={() => {
+                    localStorage.setItem('last_viewed_notification_id', newAnnouncement.id);
+                    setNewAnnouncement(null);
+                  }}
+                  className="px-4 py-2 bg-[#0A2540] text-white hover:bg-[#D4AF37] hover:text-[#0A2540] rounded-xl text-xs font-bold uppercase transition-all shadow-sm"
+                >
+                  View Details
+                </Link>
+                <button
+                  onClick={() => {
+                    localStorage.setItem('last_viewed_notification_id', newAnnouncement.id);
+                    setNewAnnouncement(null);
+                  }}
+                  className="text-[#0A2540] hover:text-red-500 font-bold text-xs uppercase cursor-pointer"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </motion.div>
+          )}
+
           <Routes>
             <Route path="/" element={<ProfileManagement />} />
             <Route path="/quotes" element={<QuoteSubmission />} />
@@ -53,9 +132,45 @@ function ProfileManagement() {
   const [profile, setProfile] = useState<any>({});
   const [saved, setSaved] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [recentPosts, setRecentPosts] = useState<any[]>([]);
+  const [recentNotifs, setRecentNotifs] = useState<any[]>([]);
+  const [fetchingActivity, setFetchingActivity] = useState(true);
 
   useEffect(() => {
     fetchProfile();
+  }, []);
+
+  useEffect(() => {
+    const fetchRecentActivity = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        let userStatus = 'General';
+        if (user) {
+          const { data: p } = await supabase
+            .from('profiles')
+            .select('student_status')
+            .eq('id', user.id)
+            .single();
+          if (p?.student_status) {
+            userStatus = p.student_status;
+          }
+        }
+
+        const [postsRes, notifsRes] = await Promise.all([
+          supabase.from('posts').select('*').eq('status', 'published').order('created_at', { ascending: false }).limit(2),
+          supabase.from('notifications').select('*').or(`category.eq.General,category.eq.${userStatus}`).order('created_at', { ascending: false }).limit(2)
+        ]);
+
+        setRecentPosts(postsRes.data || []);
+        setRecentNotifs(notifsRes.data || []);
+      } catch (err) {
+        console.error('Error fetching recent activities:', err);
+      } finally {
+        setFetchingActivity(false);
+      }
+    };
+
+    fetchRecentActivity();
   }, []);
 
   const onFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,6 +301,7 @@ function ProfileManagement() {
           marital_status: profile.marital_status,
           favorite_quote: profile.favorite_quote,
           favorite_food: profile.favorite_food,
+          contact_address: profile.contact_address || '',
           email: user.email,
           role: profile.role || 'member',
           updated_at: new Date().toISOString()
@@ -213,6 +329,110 @@ function ProfileManagement() {
       <div>
         <h1 className="text-4xl font-bold text-[#0A2540] font-serif italic mb-2">Fellowship Registry</h1>
         <p className="text-gray-400 font-light italic">Your data helps us serve you better in the fellowship.</p>
+      </div>
+
+      {/* Recent Activity Widget */}
+      <div className="bg-white rounded-[2.5rem] p-8 md:p-12 border border-gray-100 shadow-xl shadow-[#0A2540]/5">
+        <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-50">
+          <div className="flex items-center space-x-3">
+            <div className="w-1.5 h-8 bg-[#D4AF37] rounded-full"></div>
+            <div>
+              <h2 className="text-xl font-bold text-[#0A2540] uppercase tracking-wider font-sans">Recent Fellowship Activity</h2>
+              <p className="text-xs text-gray-400 font-light mt-0.5">Stay updated with the latest service announcements & word files.</p>
+            </div>
+          </div>
+          <span className="animate-pulse flex h-2.5 w-2.5 relative">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+          </span>
+        </div>
+
+        {fetchingActivity ? (
+          <div className="flex py-10 justify-center items-center space-x-3">
+            <Loader2 className="animate-spin text-[#D4AF37]" size={20} />
+            <span className="text-xs text-gray-400 font-medium">Refreshing bulletins & devotionals...</span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Announcements Section */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-extrabold uppercase tracking-widest text-gray-400 flex items-center gap-1.5">
+                  <Bell size={12} className="text-[#D4AF37]" /> Bulletins & Announcements
+                </span>
+                <Link to="/dashboard/member/notifications" className="text-xs font-bold text-[#D4AF37] hover:underline flex items-center gap-1">
+                  View Board <ArrowRight size={10} />
+                </Link>
+              </div>
+
+              {recentNotifs.length === 0 ? (
+                <div className="p-6 bg-gray-50 rounded-2xl text-center border border-dashed border-gray-100">
+                  <p className="text-xs text-gray-400 italic">No fellowship bulletins available at this time.</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {recentNotifs.map((notif) => (
+                    <div key={notif.id} className="p-4 bg-gray-50 hover:bg-[#D4AF37]/5 rounded-2xl border border-gray-100/50 transition-colors">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="px-2 py-0.5 text-[8px] font-extrabold uppercase tracking-widest bg-[#0A2540]/5 text-[#0A2540] rounded-md border border-[#0A2540]/10">
+                          {notif.category}
+                        </span>
+                        <span className="text-[9px] font-medium text-gray-400 font-mono">
+                          {new Date(notif.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <h4 className="text-xs font-bold text-[#0A2540] mb-1">{notif.title}</h4>
+                      <p className="text-[11px] text-gray-400 font-light line-clamp-2 leading-relaxed">{notif.body}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Devotionals Section */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-extrabold uppercase tracking-widest text-gray-400 flex items-center gap-1.5">
+                  <BookOpen size={12} className="text-[#D4AF37]" /> Divine Feed & Devotionals
+                </span>
+                <Link to="/blog" className="text-xs font-bold text-[#D4AF37] hover:underline flex items-center gap-1">
+                  View Devotionals <ArrowRight size={10} />
+                </Link>
+              </div>
+
+              {recentPosts.length === 0 ? (
+                <div className="p-6 bg-gray-50 rounded-2xl text-center border border-dashed border-gray-100">
+                  <p className="text-xs text-gray-400 italic">No devotionals posted yet. Spiritual updates pending.</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {recentPosts.map((post) => (
+                    <div key={post.id} className="p-4 bg-gray-50 hover:bg-[#0A2540]/5 rounded-2xl border border-gray-100/50 transition-colors flex flex-col justify-between h-auto">
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="px-2 py-0.5 text-[8px] font-extrabold uppercase tracking-widest bg-[#D4AF37]/10 text-[#0A2540] rounded-md border border-[#D4AF37]/20">
+                            {post.category}
+                          </span>
+                          <span className="text-[9px] font-medium text-gray-400 font-mono">
+                            {new Date(post.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <h4 className="text-xs font-bold text-[#0A2540] mb-1 truncate">{post.title}</h4>
+                        <p className="text-[11px] text-gray-400 font-light line-clamp-1 leading-relaxed mb-3">{post.content ? post.content.replace(/<[^>]*>/g, '').substring(0, 100) : ''}</p>
+                      </div>
+                      <Link 
+                        to={`/blog/${post.id}`}
+                        className="text-[10px] uppercase font-bold text-[#D4AF37] hover:text-[#0A2540] flex items-center gap-1 transition-colors self-start mt-1"
+                      >
+                        Read Post <ArrowRight size={10} />
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {profile?.isDraftRestored && (
@@ -290,6 +510,18 @@ function ProfileManagement() {
                       onChange={e => setProfile({...profile, phone_number: e.target.value})}
                       className="w-full pl-12 pr-4 py-4 bg-gray-50 border-0 rounded-2xl outline-none focus:ring-2 focus:ring-[#D4AF37] transition-all font-medium"
                       placeholder="+234..."
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Contact Address</label>
+                  <div className="relative">
+                    <MapPin size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#D4AF37]" />
+                    <input 
+                      type="text" value={profile.contact_address || ''} 
+                      onChange={e => setProfile({...profile, contact_address: e.target.value})}
+                      className="w-full pl-12 pr-4 py-4 bg-gray-50 border-0 rounded-2xl outline-none focus:ring-2 focus:ring-[#D4AF37] transition-all font-medium text-sm"
+                      placeholder="E.g. Room 12, Block A, North Campus Hostels"
                     />
                   </div>
                 </div>
@@ -565,7 +797,11 @@ function NotificationInbox() {
         .or(`category.eq.General,category.eq.${userStatus}`)
         .order('created_at', { ascending: false });
 
-      setNotifications(data || []);
+      const fetchedData = data || [];
+      setNotifications(fetchedData);
+      if (fetchedData.length > 0) {
+        localStorage.setItem('last_viewed_notification_id', fetchedData[0].id);
+      }
     } catch (e) {
       console.error('Error fetching notifications:', e);
     } finally {

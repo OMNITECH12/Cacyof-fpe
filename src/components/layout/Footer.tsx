@@ -35,14 +35,18 @@ export default function Footer() {
 
           <div>
             <h3 className="text-[#D4AF37] font-bold text-xs uppercase tracking-[0.2em] mb-8">Meeting Times</h3>
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div className="flex flex-col">
-                <span className="text-white text-sm font-bold mb-1">Sunday Service</span>
-                <span className="text-white/40 text-xs uppercase tracking-wider">8:00 AM — 11:30 AM</span>
+                <span className="text-white text-sm font-bold mb-0.5">Sunday Service</span>
+                <span className="text-[#D4AF37]/80 text-xs font-mono uppercase tracking-wider">8:00 AM — 11:30 AM</span>
               </div>
-              <div className="flex flex-col border-l border-[#D4AF37]/30 pl-4">
-                <span className="text-white text-sm font-bold mb-1">Mid-week Power</span>
-                <span className="text-white/40 text-xs uppercase tracking-wider">Wednesdays, 5:00 PM</span>
+              <div className="flex flex-col border-l border-[#D4AF37]/30 pl-3">
+                <span className="text-white text-sm font-bold mb-0.5">Expository Bible Study</span>
+                <span className="text-[#D4AF37]/80 text-xs font-mono uppercase tracking-wider">Wednesdays, 6:00 PM — 8:00 PM</span>
+              </div>
+              <div className="flex flex-col border-l border-[#D4AF37]/30 pl-3">
+                <span className="text-white text-sm font-bold mb-0.5">Breakthrough Hour Service</span>
+                <span className="text-[#D4AF37]/80 text-xs font-mono uppercase tracking-wider">Thursdays, 6:00 PM — 8:00 PM</span>
               </div>
             </div>
           </div>

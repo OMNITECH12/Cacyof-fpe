@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   favorite_quote TEXT,
   favorite_food TEXT,
   avatar_url TEXT,
+  contact_address TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
@@ -35,6 +36,7 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS church_role TEXT DEFAULT 'member';
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS church_position TEXT;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS academic_session TEXT;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS student_status TEXT; -- Ensures Alumni support if previous column was dropped or missing
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS contact_address TEXT;
 
 -- 2. Posts Table (Blog)
 CREATE TABLE IF NOT EXISTS posts (
