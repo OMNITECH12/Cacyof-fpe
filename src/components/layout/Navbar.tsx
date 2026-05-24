@@ -32,10 +32,23 @@ export default function Navbar({ session, role }: NavbarProps) {
         <div className="flex justify-between h-20">
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-[#D4AF37] rounded-full flex items-center justify-center text-[#0A2540] font-bold text-xl shadow-inner">C</div>
-              <div className="flex flex-col">
-                <span className="font-bold text-lg tracking-tight leading-none">CACYOF FPE</span>
-                <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-medium">Youth Fellowship</span>
+              <div className="flex flex-col items-center">
+                <svg className="w-10 h-10 text-[#D4AF37]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="50" cy="50" r="45" fill="#D4AF37" />
+                  <circle cx="50" cy="50" r="38" stroke="#0A2540" strokeWidth="2" strokeDasharray="3 3" />
+                  {/* Holy Cross */}
+                  <path d="M50 22 V78 M33 45 H67" stroke="#0A2540" strokeWidth="6" strokeLinecap="round" />
+                  {/* Rays of Spiritual Light */}
+                  <path d="M36 30 L42 36 M58 64 L64 70 M64 30 L58 36 M42 64 L36 70" stroke="#0A2540" strokeWidth="3" strokeLinecap="round" />
+                </svg>
+                <div className="text-center mt-0.5">
+                  <span className="text-[7.5px] font-extrabold tracking-[0.15em] text-[#D4AF37] block leading-none">CACYOF</span>
+                  <span className="text-[6.5px] font-bold tracking-[0.2em] text-white block leading-none mt-0.5">FPE</span>
+                </div>
+              </div>
+              <div className="flex flex-col pl-1.5 border-l border-white/10">
+                <span className="font-bold text-lg tracking-tight leading-none text-white">CACYOF FPE</span>
+                <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-medium mt-1">Youth Fellowship</span>
               </div>
             </Link>
           </div>

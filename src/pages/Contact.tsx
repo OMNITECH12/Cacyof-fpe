@@ -42,7 +42,7 @@ export default function Contact() {
               <div className="bg-[#F8FAFC] p-10 rounded-[2.5rem] border border-gray-50 group hover:bg-[#0A2540] transition-all duration-500 hover:translate-x-2">
                 <Phone className="text-[#D4AF37] mb-6 group-hover:scale-110 transition-transform" size={32} />
                 <h3 className="text-xl font-bold mb-2 group-hover:text-white transition-colors">Executive Hotline</h3>
-                <p className="text-gray-400 group-hover:text-white/60 transition-colors leading-relaxed font-light italic">+234 800 000 0000</p>
+                <p className="text-gray-400 group-hover:text-white/60 transition-colors leading-relaxed font-light italic">+2348132202310</p>
               </div>
 
               <div className="bg-[#D4AF37]/10 p-10 rounded-[2.5rem] border border-[#D4AF37]/20 group">
