@@ -8,12 +8,12 @@
   "description": "The official portal for CACYOF Federal Polytechnic Ede Youth Fellowship.",
   "icons": [
     {
-      "src": "https://images.unsplash.com/photo-1544427920-c49ccfb85579?w=192&h=192&fit=crop",
+      "src": "/logo.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://images.unsplash.com/photo-1544427920-c49ccfb85579?w=512&h=512&fit=crop",
+      "src": "/logo.png",
       "sizes": "512x512",
       "type": "image/png"
     }
