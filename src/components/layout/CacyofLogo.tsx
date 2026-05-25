@@ -16,160 +16,132 @@ export default function CacyofLogo({ size = 'md', theme = 'light' }: LogoProps) 
 
   return (
     <div className={`flex items-center ${dimensions.textGap} group select-none`}>
-      {/* Logos Joined Side by Side */}
-      <div className="flex items-center space-x-2 scale-90 sm:scale-100 transition-all">
-        {/* Left: CAC Logo (Circle) */}
-        <div className="relative shrink-0">
-          <svg
-            className={`${dimensions.height} w-auto`}
-            viewBox="0 0 120 120"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            {/* Outer golden circle outer line */}
-            <circle cx="60" cy="55" r="48" stroke="#D4AF37" strokeWidth="2.5" />
-            <circle cx="60" cy="55" r="44" stroke="#0A2540" strokeWidth="1" strokeDasharray="3 2" />
-            
-            {/* Background of inner pasture */}
-            <circle cx="60" cy="55" r="38" fill="#E8F5E9" />
-            
-            {/* Pastoral Green Field Base */}
-            <path d="M25 70 C 40 60, 80 62, 95 70 L 95 93 C 80 93, 40 93, 25 93 Z" fill="#81C784" />
-            
-            {/* Shepherd Character Silhouette */}
-            <g transform="translate(48, 28)">
-              {/* Shepherd robe & staff */}
-              <path d="M12 18 L10 50 L18 50 L16 18 Z" fill="#E53935" /> {/* Red outer robe */}
-              <path d="M11 18 L13 50 L15 50 L13 18 Z" fill="#FFFFFF" fillOpacity="0.9" /> {/* Inner white robe */}
-              <circle cx="14" cy="12" r="5" fill="#FFCC80" /> {/* Head */}
-              {/* Shepherd crook/staff */}
-              <path d="M20 14 L20 48 M20 14 C20 10, 15 10, 15 12" stroke="#4E342E" strokeWidth="2" strokeLinecap="round" />
-              {/* Lamb being carried in arms */}
-              <path d="M7 23 C11 19, 17 19, 21 23 C21 27, 7 27, 7 23" fill="#FFFFFF" stroke="#B0BEC5" strokeWidth="1" />
-              <circle cx="9" cy="22" r="1.5" fill="#ECEFF1" />
-            </g>
-            
-            {/* Miniature Sheep grazing around */}
-            <g transform="translate(32, 65)">
-              <rect x="2" y="5" width="12" height="7" rx="3.5" fill="#FFFFFF" stroke="#CFD8DC" strokeWidth="1" />
-              <circle cx="15" cy="6" r="2.5" fill="#FFFFFF" />
-              <line x1="5" y1="12" x2="5" y2="15" stroke="#37474F" strokeWidth="1.5" />
-              <line x1="11" y1="12" x2="11" y2="15" stroke="#37474F" strokeWidth="1.5" />
-            </g>
-            <g transform="translate(73, 62)">
-              <rect x="2" y="5" width="10" height="6" rx="3" fill="#FFFFFF" stroke="#CFD8DC" strokeWidth="1" />
-              <circle cx="1" cy="6" r="2" fill="#FFFFFF" />
-              <line x1="4" y1="11" x2="4" y2="14" stroke="#37474F" strokeWidth="1" />
-              <line x1="8" y1="11" x2="8" y2="14" stroke="#37474F" strokeWidth="1" />
-            </g>
+      {/* Circle Logo with Bell, Bible, and Academic Hat */}
+      <div className="relative shrink-0 flex items-center justify-center">
+        <svg
+          className={`${dimensions.height} w-auto overflow-visible`}
+          viewBox="0 0 120 120"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          {/* Main Logo Circle (Base) */}
+          {/* Filled with deep royal navy, with a golden and double concentric borders */}
+          <circle cx="60" cy="65" r="42" fill="#0A2540" stroke="#D4AF37" strokeWidth="2.5" />
+          <circle cx="60" cy="65" r="38" stroke="#FFFFFF" strokeWidth="0.8" strokeDasharray="3 2" />
 
-            {/* Circular Text Label: CHRIST APOSTOLIC CHURCH */}
-            {/* Curved Path for Text */}
-            <path id="cacTextPath" d="M18 55 A42 42 0 1 1 102 55" fill="none" />
-            <text fontFamily="Inter, system-ui, sans-serif" fontSize="6.5" fontWeight="900" fill="#0A2540" letterSpacing="0.6">
-              <textPath href="#cacTextPath" startOffset="50%" textAnchor="middle">
-                CHRIST APOSTOLIC CHURCH
-              </textPath>
-            </text>
+          {/* Golden Rays radiating inside the circle from behind the Bible */}
+          <g opacity="0.3">
+            <line x1="60" y1="65" x2="35" y2="40" stroke="#D4AF37" strokeWidth="1" />
+            <line x1="60" y1="65" x2="85" y2="40" stroke="#D4AF37" strokeWidth="1" />
+            <line x1="60" y1="65" x2="60" y2="30" stroke="#D4AF37" strokeWidth="1" />
+            <line x1="60" y1="65" x2="30" y2="65" stroke="#D4AF37" strokeWidth="1" />
+            <line x1="60" y1="65" x2="90" y2="65" stroke="#D4AF37" strokeWidth="1" />
+            <line x1="60" y1="65" x2="45" y2="90" stroke="#D4AF37" strokeWidth="1" />
+            <line x1="60" y1="65" x2="75" y2="90" stroke="#D4AF37" strokeWidth="1" />
+          </g>
 
-            {/* Bottom Banner Ribbon */}
-            <g transform="translate(10, 88)">
-              {/* Yellow Banner background */}
-              <rect x="5" y="4" width="90" height="15" rx="3" fill="#FFF59D" stroke="#D4AF37" strokeWidth="1" />
-              {/* Ribbon Fork fold overlays */}
-              <path d="M5 8 L0 12 L5 16 Z" fill="#D4AF37" />
-              <path d="M95 8 L100 12 L95 16 Z" fill="#D4AF37" />
-              <text x="50" y="14" fontFamily="Inter, system-ui, sans-serif" fontSize="5" fontWeight="bold" fill="#0A2540" textAnchor="middle" letterSpacing="0.2">
-                ONE FOLD, ONE SHEPHERD
-              </text>
-            </g>
-            {/* John 10:16 sub scripture */}
-            <text x="60" y="115" fontFamily="JetBrains Mono, monospace" fontSize="5.5" fontWeight="bold" fill="#D4AF37" textAnchor="middle">
-              JOHN 10:16
-            </text>
-          </svg>
-        </div>
-
-        {/* Right: FPE Logo (Shield) */}
-        <div className="relative shrink-0">
-          <svg
-            className={`${dimensions.height} w-auto`}
-            viewBox="0 0 120 120"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            {/* The Badge Shield Outline */}
+          {/* Academic Hat (Mortarboard Cap) sitting on top of the circle */}
+          <g id="academic-hat" className="transition-transform duration-300 group-hover:-translate-y-0.5">
+            {/* Cap base (band around the head) */}
             <path
-              d="M25 15 C45 12, 75 12, 95 15 C95 45, 95 72, 60 93 C25 72, 25 45, 25 15 Z"
-              fill="#FFFFFF"
+              d="M44 21 V26.5 C44 33, 76 33, 76 26.5 V21 Z"
+              fill="#D4AF37"
               stroke="#0A2540"
-              strokeWidth="3.5"
+              strokeWidth="1.2"
+            />
+            {/* The diamond top of the mortarboard */}
+            <polygon
+              points="60 9, 88 19, 60 29, 32 19"
+              fill="#D4AF37"
+              stroke="#FFFFFF"
+              strokeWidth="1.5"
+            />
+            {/* Small center button on cap top */}
+            <ellipse cx="60" cy="19" rx="2" ry="1" fill="#FFFFFF" />
+            {/* Tassel hanging down the side */}
+            <path
+              d="M60 19 Q40 21, 38 29"
+              stroke="#FFFFFF"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+              fill="none"
+            />
+            {/* Tassel dangling fringe */}
+            <circle cx="38" cy="30" r="1.8" fill="#D4AF37" stroke="#FFFFFF" strokeWidth="0.8" />
+          </g>
+
+          {/* The Open Holy Bible in the lower half of the circle */}
+          <g id="open-bible" transform="translate(0, 4)">
+            {/* Pages - Left and Right sides */}
+            <path
+              d="M34 81 C45 77, 57 77, 60 81 C63 77, 75 77, 86 81 L84 65 C73 61, 62 61, 60 65 C58 61, 47 61, 36 65 Z"
+              fill="#FFFFFF"
+              stroke="#D4AF37"
+              strokeWidth="1.5"
               strokeLinejoin="round"
             />
-            {/* Shield Internal Content Area Clipping Path */}
-            <mask id="shieldMask">
-              <path d="M25 15 C45 12, 75 12, 95 15 C95 45, 95 72, 60 93 C25 72, 25 45, 25 15 Z" fill="#FFFFFF" />
-            </mask>
+            {/* Bible bookmark ribbon (Trailing red ribbon details) */}
+            <path d="M60 76 L60 87 L57 84 Z" fill="#E53935" />
+            <path d="M60 76 L60 86 L62 83.5 Z" fill="#C62828" />
 
-            <g mask="url(#shieldMask)">
-              {/* Sky Blue Top Chamber */}
-              <rect x="20" y="10" width="80" height="28" fill="#29B6F6" />
-              {/* Red Middle Chamber */}
-              <rect x="20" y="38" width="80" height="30" fill="#E53935" />
-              {/* Wavy Sky Blue Bottom Chamber */}
-              <rect x="20" y="68" width="80" height="30" fill="#0288D1" />
+            {/* Micro scripture text representative lines */}
+            {/* Left page lines */}
+            <line x1="40" y1="69" x2="52" y2="69" stroke="#94A3B8" strokeWidth="1" strokeLinecap="round" />
+            <line x1="40" y1="73" x2="52" y2="73" stroke="#94A3B8" strokeWidth="1" strokeLinecap="round" />
+            <line x1="40" y1="77" x2="50" y2="77" stroke="#94A3B8" strokeWidth="1" strokeLinecap="round" />
 
-              {/* Water waves at the bottom */}
-              <path d="M20 74 Q 30 71, 40 74 T 60 74 T 80 74 T 100 74" stroke="#003C5C" strokeWidth="2" fill="none" />
-              <path d="M20 79 Q 30 76, 40 79 T 60 79 T 80 79 T 100 79" stroke="#003C5C" strokeWidth="2" fill="none" />
-              <path d="M20 84 Q 30 81, 40 84 T 60 84 T 80 84 T 100 84" stroke="#003C5C" strokeWidth="2" fill="none" />
+            {/* Right page lines */}
+            <line x1="68" y1="69" x2="80" y2="69" stroke="#94A3B8" strokeWidth="1" strokeLinecap="round" />
+            <line x1="68" y1="73" x2="80" y2="73" stroke="#94A3B8" strokeWidth="1" strokeLinecap="round" />
+            <line x1="68" y1="77" x2="78" y2="77" stroke="#94A3B8" strokeWidth="1" strokeLinecap="round" />
 
-              {/* EDE Text Label */}
-              <text x="60" y="64" fontFamily="Inter, sans-serif" fontSize="10" fontWeight="900" fill="#0A2540" textAnchor="middle" letterSpacing="1">
-                EDE
-              </text>
+            {/* Book thick bottom pages depth shadow */}
+            <path d="M34 81 L34 82 C45 78, 57 78, 60 82 C63 78, 75 78, 86 82 L86 81 Z" fill="#D4AF37" opacity="0.6" />
+          </g>
 
-              {/* White Mechanical Gear/Cog Motif (in the middle red band) */}
-              <circle cx="60" cy="50" r="16" stroke="#FFFFFF" strokeWidth="4.5" strokeDasharray="6 3.5" fill="none" />
-              <circle cx="60" cy="50" r="12" stroke="#0A2540" strokeWidth="2" fill="none" />
+          {/* The Bell placed on the Bible */}
+          <g id="bell" className="transition-transform duration-300 group-hover:rotate-6 origin-[60px_35px]">
+            {/* Top Loop/Handle of the Bell */}
+            <circle cx="60" cy="39" r="3" stroke="#D4AF37" strokeWidth="1.5" fill="none" />
+            
+            {/* Bell Crown Cap */}
+            <path d="M54 43 C54 39, 66 39, 66 43 Z" fill="#D4AF37" />
 
-              {/* Open Book Academic Motif (in the top blue band) */}
-              <g transform="translate(38, 20)">
-                <path d="M3 13 C 11 9, 21 9, 22 13" stroke="#0A2540" strokeWidth="2" fill="none" />
-                <path d="M41 13 C 33 9, 23 9, 22 13" stroke="#0A2540" strokeWidth="2" fill="none" />
-                <rect x="4" y="2" width="16" height="10" rx="1" fill="#FFFFFF" stroke="#0A2540" strokeWidth="1.5" />
-                <rect x="24" y="2" width="16" height="10" rx="1" fill="#FFFFFF" stroke="#0A2540" strokeWidth="1.5" />
-                <line x1="7" y1="5" x2="17" y2="5" stroke="#CFD8DC" strokeWidth="1" />
-                <line x1="7" y1="8" x2="17" y2="8" stroke="#CFD8DC" strokeWidth="1" />
-                <line x1="27" y1="5" x2="37" y2="5" stroke="#CFD8DC" strokeWidth="1" />
-                <line x1="27" y1="8" x2="37" y2="8" stroke="#CFD8DC" strokeWidth="1" />
-              </g>
+            {/* Bell main trumpet cone body */}
+            <path
+              d="M54 43 L51 55 Q50 58, 44 59 C50 62, 70 62, 76 59 Q70 58, 66 55 L63 43 Z"
+              fill="#FFF59D"
+              stroke="#D4AF37"
+              strokeWidth="1.2"
+              strokeLinejoin="round"
+            />
+            {/* Deep inner shadow highlight representing metallic finish */}
+            <path
+              d="M55 44 L53 54 Q56 56, 60 56 Q64 56, 67 54 L65 44 Z"
+              fill="#FBC02D"
+              opacity="0.3"
+            />
 
-              {/* Central Black Obelisk/Pointer (Tower running vertical) */}
-              <path d="M58 20 L62 20 L60.5 75 L59.5 75 Z" fill="#212121" />
-              <polygon points="60,11 63,20 57,20" fill="#212121" />
+            {/* Hanging Clapper (Bell striker clinking underneath) */}
+            <circle cx="60" cy="61.5" r="2.5" fill="#D4AF37" stroke="#FFFFFF" strokeWidth="0.5" />
 
-              {/* Top Banner Label inside shield */}
-              <path id="shieldTopTextPath" d="M30 20 C 45 17, 75 17, 90 20" fill="none" />
-              <text fontFamily="Inter, sans-serif" fontSize="4.8" fontWeight="bold" fill="#0A2540">
-                <textPath href="#shieldTopTextPath" startOffset="50%" textAnchor="middle">
-                  THE FEDERAL POLYTECHNIC
-                </textPath>
-              </text>
+            {/* Spiritual Sound Waves (Vibration of prayer & the call of God) */}
+            <g stroke="#D4AF37" strokeWidth="1" strokeLinecap="round" opacity="0.8">
+              <path d="M39 46 A 8 8 0 0 0 39 56" fill="none" />
+              <path d="M35 43 A 12 12 0 0 0 35 59" fill="none" />
+              <path d="M81 46 A 8 8 0 0 1 81 56" fill="none" />
+              <path d="M85 43 A 12 12 0 0 1 85 59" fill="none" />
             </g>
+          </g>
 
-            {/* Scroll/Ribbon below shield */}
-            <g transform="translate(12, 88)">
-              {/* White wrap scroll ribbon */}
-              <path d="M10 8 L15 2 L25 5 L20 11 Z" fill="#EAEAEA" stroke="#0A2540" strokeWidth="1" />
-              <path d="M85 8 L80 2 L70 5 L75 11 Z" fill="#EAEAEA" stroke="#0A2540" strokeWidth="1" />
-              <rect x="15" y="4" width="67" height="14" rx="2" fill="#FFFFFF" stroke="#0A2540" strokeWidth="1.5" />
-              <text x="48" y="13" fontFamily="Inter, sans-serif" fontSize="4.2" fontWeight="900" fill="#0A2540" textAnchor="middle" letterSpacing="0.1">
-                KNOWLEDGE, SKILL & CHARACTER
-              </text>
-            </g>
-          </svg>
-        </div>
+          {/* Small star-like decals for highlights */}
+          <g fill="#D4AF37">
+            {/* Star left */}
+            <path d="M26 62 L27 64 L29 64 L27 65 L28 67 L26 66 L24 67 L25 65 L23 64 L25 64 Z" opacity="0.8" />
+            {/* Star right */}
+            <path d="M94 62 L95 64 L97 64 L95 65 L96 67 L94 66 L92 67 L93 65 L91 64 L93 64 Z" opacity="0.8" />
+          </g>
+        </svg>
       </div>
 
       {/* Brand Text Suffix: CACYOF FPE */}
