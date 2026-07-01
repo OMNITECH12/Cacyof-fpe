@@ -8,7 +8,8 @@ import {
   FileText, 
   Send,
   LayoutDashboard,
-  X
+  X,
+  Video
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
@@ -38,6 +39,7 @@ export default function Sidebar({ role, isOpen, onClose }: SidebarProps) {
     { name: 'Broadcast', path: '/dashboard/admin/broadcast', icon: Send },
     { name: 'Quote Desk', path: '/dashboard/admin/quotes', icon: Quote },
     { name: 'Church Leaders', path: '/dashboard/admin/leaders', icon: User },
+    { name: 'Live Stream', path: '/dashboard/admin/live', icon: Video },
   ];
 
   const links = role === 'admin' ? adminLinks : memberLinks;

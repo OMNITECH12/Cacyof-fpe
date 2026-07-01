@@ -1,10 +1,60 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { ChevronRight, Heart, Users, BookOpen, Quote as QuoteIcon } from 'lucide-react';
+import { ChevronRight, Heart, Users, BookOpen, Quote as QuoteIcon, Tv, Wifi } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 
 export default function Home() {
+  const [liveData, setLiveData] = useState<any>(null);
+
+  useEffect(() => {
+    fetchLiveStatus();
+
+    const channel = supabase
+      .channel('home_live_status')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'live_broadcasts' }, (payload: any) => {
+        if (payload.new) {
+          setLiveData(payload.new);
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const fetchLiveStatus = async () => {
+    try {
+      const { data } = await supabase
+        .from('live_broadcasts')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(1);
+      if (data && data.length > 0) {
+        setLiveData(data[0]);
+      }
+    } catch (err) {
+      console.warn('Could not load home live status', err);
+    }
+  };
+
+  const isLive = liveData?.is_live || false;
+  const liveTitle = liveData?.title || 'Sunday Worship Service';
+  const embedUrl = liveData?.embed_url || '';
+
   return (
     <div className="flex flex-col bg-white overflow-hidden">
+      {/* Live Stream Alert Bar */}
+      {isLive && (
+        <div className="bg-red-600 text-white py-3.5 px-4 text-center text-sm font-bold tracking-wide flex items-center justify-center space-x-2 relative z-30 animate-pulse">
+          <span className="w-2.5 h-2.5 rounded-full bg-white"></span>
+          <span>🔴 WE ARE LIVE NOW: "{liveTitle}"! Join our virtual sanctuary.</span>
+          <Link to="/live" className="underline font-extrabold hover:text-white/80 transition-all ml-2">
+            Enter Live Sanctuary &rarr;
+          </Link>
+        </div>
+      )}
       {/* Hero Section */}
       <section className="relative h-[95vh] min-h-[700px] flex items-center bg-[#0A2540]">
         {/* Animated Background Decor */}
@@ -85,6 +135,48 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Active Live Video Stream Section on Home Page */}
+      {isLive && embedUrl && (
+        <section className="py-24 bg-gray-50 border-y border-gray-100">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+              <div className="lg:col-span-5 space-y-6">
+                <div className="inline-flex items-center space-x-2 bg-red-50 text-red-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                  <Wifi size={12} className="animate-pulse" />
+                  <span>Stream is active</span>
+                </div>
+                <h2 className="text-4xl md:text-5xl font-bold text-[#0A2540] font-serif leading-tight">
+                  Join Our Ongoing <span className="italic text-[#D4AF37]">Live Stream</span> Service
+                </h2>
+                <p className="text-gray-500 text-base leading-relaxed font-light italic">
+                  Don't miss the current spiritual message and fellowship. Tune in directly from the player here, or click to enter the full Virtual Sanctuary experience with responsive layout rules and program guides.
+                </p>
+                <div className="pt-4">
+                  <Link
+                    to="/live"
+                    className="inline-flex items-center space-x-2 bg-[#0A2540] text-white px-8 py-4 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-opacity-95 transition-all shadow-md"
+                  >
+                    <Tv size={16} className="text-[#D4AF37]" />
+                    <span>Enter Live Sanctuary</span>
+                  </Link>
+                </div>
+              </div>
+              <div className="lg:col-span-7">
+                <div className="aspect-video bg-black rounded-[2.5rem] overflow-hidden shadow-2xl border border-gray-200 relative">
+                  <iframe
+                    src={embedUrl}
+                    title={liveTitle}
+                    className="w-full h-full border-0 absolute inset-0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Mission Section */}
       <section className="py-32 bg-white relative">

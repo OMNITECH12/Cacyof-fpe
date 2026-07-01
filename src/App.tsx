@@ -11,6 +11,7 @@ import Login from './pages/Login';
 import BlogDetail from './pages/BlogDetail';
 import MemberDashboard from './pages/dashboard/MemberDashboard';
 import AdminDashboard from './pages/dashboard/AdminDashboard';
+import Live from './pages/Live';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 
@@ -107,6 +108,7 @@ function App() {
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:id" element={<BlogDetail />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/live" element={<Live />} />
             <Route path="/login" element={session ? (
               role === 'admin' ? <Navigate to="/dashboard/admin" /> : <Navigate to="/dashboard/member" />
             ) : <Login />} />

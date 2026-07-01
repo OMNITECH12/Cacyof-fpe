@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, User, LogOut, LayoutDashboard } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import CacyofLogo from './CacyofLogo';
 
@@ -11,7 +11,40 @@ interface NavbarProps {
 
 export default function Navbar({ session, role }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLive, setIsLive] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    fetchLiveStatus();
+
+    const channel = supabase
+      .channel('navbar_live_status')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'live_broadcasts' }, (payload: any) => {
+        if (payload.new) {
+          setIsLive(payload.new.is_live);
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const fetchLiveStatus = async () => {
+    try {
+      const { data } = await supabase
+        .from('live_broadcasts')
+        .select('is_live')
+        .order('created_at', { ascending: false })
+        .limit(1);
+      if (data && data.length > 0) {
+        setIsLive(data[0].is_live);
+      }
+    } catch (err) {
+      console.warn('Could not load navbar live status', err);
+    }
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -21,6 +54,7 @@ export default function Navbar({ session, role }: NavbarProps) {
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'About', path: '/about' },
+    { name: 'Live', path: '/live', isLiveBadge: true },
     { name: 'Blog', path: '/blog' },
     { name: 'Contact', path: '/contact' },
   ];
@@ -42,11 +76,17 @@ export default function Navbar({ session, role }: NavbarProps) {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`text-sm font-medium transition-all hover:text-[#D4AF37] ${
+                className={`text-sm font-medium transition-all hover:text-[#D4AF37] flex items-center space-x-1.5 ${
                   isActive(link.path) ? 'text-[#D4AF37] underline underline-offset-8' : 'text-white/80'
                 }`}
               >
-                {link.name}
+                <span>{link.name}</span>
+                {link.isLiveBadge && isLive && (
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                  </span>
+                )}
               </Link>
             ))}
 
@@ -97,11 +137,17 @@ export default function Navbar({ session, role }: NavbarProps) {
               key={link.path}
               to={link.path}
               onClick={() => setIsOpen(false)}
-              className={`block px-4 py-3 rounded-xl text-base font-medium ${
+              className={`px-4 py-3 rounded-xl text-base font-medium flex items-center justify-between ${
                 isActive(link.path) ? 'bg-[#D4AF37]/10 text-[#D4AF37]' : 'text-white hover:bg-white/5'
               }`}
             >
-              {link.name}
+              <span>{link.name}</span>
+              {link.isLiveBadge && isLive && (
+                <span className="flex items-center space-x-1 bg-red-500/10 text-red-400 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full border border-red-500/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                  <span>LIVE</span>
+                </span>
+              )}
             </Link>
           ))}
           <div className="pt-4 border-t border-white/10">

@@ -15,7 +15,9 @@ import {
   FileText,
   LayoutDashboard,
   User,
-  Shield
+  Shield,
+  Video,
+  Tv
 } from 'lucide-react';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, ImageRun, WidthType } from 'docx';
 import { saveAs } from 'file-saver';
@@ -46,6 +48,7 @@ export default function AdminDashboard() {
             <Route path="/broadcast" element={<NotificationBroadcaster />} />
             <Route path="/quotes" element={<QuoteReviewer />} />
             <Route path="/leaders" element={<LeaderManager />} />
+            <Route path="/live" element={<LiveManager />} />
           </Routes>
         </div>
       </div>
@@ -1103,6 +1106,266 @@ function QuoteReviewer() {
              </div>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function LiveManager() {
+  const [record, setRecord] = useState<any>(null);
+  const [isLive, setIsLive] = useState(false);
+  const [title, setTitle] = useState('');
+  const [embedUrl, setEmbedUrl] = useState('');
+  const [platform, setPlatform] = useState('youtube');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    fetchLiveState();
+  }, []);
+
+  const fetchLiveState = async () => {
+    try {
+      setLoading(true);
+      const { data } = await supabase
+        .from('live_broadcasts')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (data && data.length > 0) {
+        setRecord(data[0]);
+        setIsLive(data[0].is_live);
+        setTitle(data[0].title || '');
+        setEmbedUrl(data[0].embed_url || '');
+        setPlatform(data[0].platform || 'youtube');
+      } else {
+        // If empty, let's insert a default row!
+        const defaultRow = {
+          is_live: false,
+          title: 'CACYOF FPE Sunday Live Service',
+          embed_url: '',
+          platform: 'youtube'
+        };
+        const { data: inserted } = await supabase
+          .from('live_broadcasts')
+          .insert([defaultRow])
+          .select();
+
+        if (inserted && inserted.length > 0) {
+          setRecord(inserted[0]);
+        }
+      }
+    } catch (err) {
+      console.error("Error loading live state:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setSaving(true);
+      
+      // Extract or normalize link (if they enter youtube.com/watch?v=... or share link, extract embed code if possible)
+      let finalEmbed = embedUrl;
+      let finalPlatform = platform;
+
+      if (embedUrl.includes('youtube.com/watch?v=')) {
+        const id = embedUrl.split('v=')[1]?.split('&')[0];
+        if (id) {
+          finalEmbed = `https://www.youtube.com/embed/${id}`;
+          finalPlatform = 'youtube';
+        }
+      } else if (embedUrl.includes('youtu.be/')) {
+        const id = embedUrl.split('youtu.be/')[1]?.split('?')[0];
+        if (id) {
+          finalEmbed = `https://www.youtube.com/embed/${id}`;
+          finalPlatform = 'youtube';
+        }
+      } else if (embedUrl.includes('facebook.com/')) {
+        finalPlatform = 'facebook';
+      }
+
+      const updateData = {
+        is_live: isLive,
+        title: title || 'CACYOF FPE Live Service',
+        embed_url: finalEmbed,
+        platform: finalPlatform,
+        updated_at: new Date().toISOString()
+      };
+
+      let res;
+      if (record?.id) {
+        res = await supabase
+          .from('live_broadcasts')
+          .update(updateData)
+          .eq('id', record.id);
+      } else {
+        res = await supabase
+          .from('live_broadcasts')
+          .insert([updateData]);
+      }
+
+      if (res.error) {
+        alert("Error saving settings: " + res.error.message);
+      } else {
+        alert("Live broadcast settings updated successfully!");
+        
+        // Let's also trigger a physical Notification in the notifications table if the switch was toggled ON!
+        if (isLive && (!record || !record.is_live)) {
+          await supabase.from('notifications').insert([{
+            title: '🔴 WE ARE LIVE!',
+            body: `CACYOF FPE is now broadcasting live: "${title || 'CACYOF FPE Live Service'}". Click the Live link on the home page or navbar to join us!`,
+            category: 'General'
+          }]);
+        }
+        
+        fetchLiveState();
+      }
+    } catch (err: any) {
+      alert("Error saving: " + err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="py-40 text-center">
+        <Loader2 className="animate-spin inline text-[#D4AF37]" size={40} />
+        <p className="text-gray-400 font-light mt-4">Syncing live dashboard state...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-12">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+          <h2 className="text-3xl font-extrabold text-[#0A2540] tracking-tight font-serif">Live Stream Control</h2>
+          <p className="text-gray-400 font-light mt-1">Activate, switch, and embed the fellowship livestream link for all members.</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Form controls */}
+        <div className="lg:col-span-2 bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm space-y-8">
+          <h3 className="text-xl font-bold text-[#0A2540] border-b border-gray-100 pb-4">Stream Settings</h3>
+
+          <form onSubmit={handleSave} className="space-y-6">
+            <div>
+              <label className="block text-[10px] font-bold text-[#0A2540] uppercase tracking-widest mb-2 pl-1">Livestream Status</label>
+              <div className="flex items-center space-x-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => setIsLive(!isLive)}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    isLive ? 'bg-red-500' : 'bg-gray-200'
+                  }`}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                      isLive ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+                <div>
+                  <span className="text-sm font-bold text-[#0A2540] block">
+                    {isLive ? '🔴 Active / Live now' : '⚪ Offline / Stream Inactive'}
+                  </span>
+                  <span className="text-xs text-gray-400 font-light">
+                    {isLive 
+                      ? 'Stream will show in real-time with alert flags on the Home and Live pages.' 
+                      : 'Stream player is disabled; generic upcoming notice will display instead.'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-bold text-[#0A2540] uppercase tracking-widest mb-2 pl-1">Service or Broadcast Title</label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. Sunday Breakthrough Service"
+                className="w-full px-5 py-4 rounded-xl border border-gray-200 focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] text-sm text-[#0A2540]"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-bold text-[#0A2540] uppercase tracking-widest mb-2 pl-1">Live Video Stream Link</label>
+              <input
+                type="url"
+                value={embedUrl}
+                onChange={(e) => setEmbedUrl(e.target.value)}
+                placeholder="YouTube URL (e.g. https://www.youtube.com/watch?v=...) or Facebook embed link"
+                className="w-full px-5 py-4 rounded-xl border border-gray-200 focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] text-sm text-[#0A2540]"
+                required
+              />
+              <p className="text-[11px] text-gray-400 font-light mt-1.5 leading-relaxed">
+                Paste any standard YouTube watch link, share link, or iframe source URL. The portal automatically formats it into a secure responsive embed players.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[10px] font-bold text-[#0A2540] uppercase tracking-widest mb-2 pl-1">Platform Type</label>
+                <select
+                  value={platform}
+                  onChange={(e) => setPlatform(e.target.value)}
+                  className="w-full px-5 py-4 rounded-xl border border-gray-200 focus:outline-none focus:border-[#D4AF37] text-sm text-[#0A2540] bg-white"
+                >
+                  <option value="youtube">YouTube Live</option>
+                  <option value="facebook">Facebook Live</option>
+                  <option value="other">Other Embed Code</option>
+                </select>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={saving}
+              className="flex items-center justify-center space-x-2 bg-[#0A2540] text-[#D4AF37] px-8 py-4 rounded-xl font-bold text-sm uppercase tracking-wider hover:bg-opacity-95 transition-all disabled:opacity-50 shadow-md"
+            >
+              {saving ? <Loader2 size={16} className="animate-spin" /> : <Tv size={16} />}
+              <span>Save & Publish Live Status</span>
+            </button>
+          </form>
+        </div>
+
+        {/* Right Help / Preview Box */}
+        <div className="bg-[#0A2540] text-white p-10 rounded-[2.5rem] shadow-sm flex flex-col justify-between">
+          <div className="space-y-6">
+            <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-[#D4AF37]">
+              <Video size={24} />
+            </div>
+            <div>
+              <h4 className="text-lg font-bold font-serif mb-2">Live stream guidelines</h4>
+              <p className="text-white/60 text-sm font-light leading-relaxed">
+                When you toggle the stream <strong className="text-[#D4AF37]">ON</strong>:
+              </p>
+            </div>
+            <ul className="space-y-3 text-xs text-white/60 font-light list-disc pl-4 leading-relaxed">
+              <li>A beautiful red glowing <strong className="text-red-400">🔴 LIVE</strong> badge and direct streaming box appears instantly on the website home page.</li>
+              <li>A custom live stream navigation button is visible to all visitors.</li>
+              <li>An automated notification post is broadcasts to the "Board Notices" board informing members of the active livestream!</li>
+              <li>The system automatically converts standard YouTube link variants into responsive iframe embeds.</li>
+            </ul>
+          </div>
+          
+          <div className="border-t border-white/10 pt-6 mt-8">
+            <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-bold block mb-1">Active broadcast info</span>
+            <p className="text-xs text-white/40 italic font-mono">
+              Status: {isLive ? '🔴 LIVE' : '⚪ OFFLINE'}<br/>
+              Title: {title || 'None'}<br/>
+              Platform: {platform.toUpperCase()}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

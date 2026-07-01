@@ -106,6 +106,8 @@ BEGIN
     DROP POLICY IF EXISTS "Admins can manage notifications" ON notifications;
     DROP POLICY IF EXISTS "Everyone can view leaders" ON leaders;
     DROP POLICY IF EXISTS "Admins can manage leaders" ON leaders;
+    DROP POLICY IF EXISTS "Everyone can view live broadcasts" ON live_broadcasts;
+    DROP POLICY IF EXISTS "Admins can manage live broadcasts" ON live_broadcasts;
 END
 $$;
 
@@ -136,6 +138,26 @@ CREATE POLICY "Admins can manage notifications" ON notifications FOR ALL USING (
 -- Leaders: Everyone can view, only admins can manage
 CREATE POLICY "Everyone can view leaders" ON leaders FOR SELECT USING (true);
 CREATE POLICY "Admins can manage leaders" ON leaders FOR ALL USING (
+  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+);
+
+-- 6. Live Broadcasts Table
+CREATE TABLE IF NOT EXISTS live_broadcasts (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  is_live BOOLEAN DEFAULT false,
+  title TEXT DEFAULT 'CACYOF FPE Live Service',
+  embed_url TEXT,
+  platform TEXT DEFAULT 'youtube', -- 'youtube', 'facebook', 'other'
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+-- Enable RLS
+ALTER TABLE live_broadcasts ENABLE ROW LEVEL SECURITY;
+
+-- Policies
+CREATE POLICY "Everyone can view live broadcasts" ON live_broadcasts FOR SELECT USING (true);
+CREATE POLICY "Admins can manage live broadcasts" ON live_broadcasts FOR ALL USING (
   EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
 );
 
