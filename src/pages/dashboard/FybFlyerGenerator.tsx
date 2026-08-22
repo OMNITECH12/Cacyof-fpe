@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useSearchParams, Link } from 'react-router-dom';
 import { 
   Download, 
   RefreshCw, 
@@ -13,20 +14,42 @@ import {
   Trash2,
   FileImage,
   UploadCloud,
-  Crown
+  Crown,
+  Shield
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
 interface FybData {
   name: string;
+  department: string;
+  level: string;
+  unitInFellowship: string;
   dob: string;
+  nickname: string;
   stateOfOrigin: string;
+  homeAddress: string;
+  phone: string;
+  email: string;
+  facebookName: string;
+  viewAndDesireAboutCacyof: string;
+  mentor: string;
+  favoriteLecturer?: string;
+  entrepreneurPath: string;
+  career: string;
+  utmostDesireFromGod: string;
   hobbies: string;
-  favoriteCourse: string;
-  favoriteLecturer: string;
-  favoriteCoursemate: string;
   quote: string;
-  asideCourse: string;
+  favoriteSong: string;
+  favoriteFood: string;
+  viewAboutLife: string;
+  wordOfAdvice: string;
+  sourceOfInspiration: string;
+  maritalStatus: string;
+  // Legacy aliases for backward compatibility
+  favoriteCourse?: string;
+  favoriteCoursemate?: string;
+  asideCourse?: string;
+  // Photo & Canvas settings
   photoUrl: string;
   photoZoom: number;
   photoX: number;
@@ -40,18 +63,47 @@ interface FybData {
   logo1Url: string;
   logo2Url: string;
   showLogos: boolean;
+  [key: string]: any;
 }
 
+// Utility function to strip religious titles from official full names
+const formatCleanFullName = (rawName: string): string => {
+  if (!rawName) return '';
+  return rawName
+    .replace(/^(BRO\.|BROTHER|SIS\.|SISTER|EVANG\.|EVANGELIST|PASTOR|PST\.|DCN\.|DEACON|DCNS\.|DEACONESS|APOSTLE|REV\.|REVEREND|ELDER)\s+/i, '')
+    .trim()
+    .toUpperCase();
+};
+
 const DEFAULT_FYB_DATA: FybData = {
-  name: 'BRO. OLUMIDE DANIEL ADEYEMI',
-  dob: '18TH OCTOBER',
+  name: 'ALABI IYANUOLUWA',
+  department: 'BANKING AND FINANCE',
+  level: 'HND 2',
+  unitInFellowship: 'MEMBER',
+  dob: '23/12',
+  nickname: 'LIZZY',
   stateOfOrigin: 'OSUN STATE',
-  hobbies: 'SINGING, SCRIPTURE RESEARCH & CHESS',
-  favoriteCourse: 'COM 211 (DATA STRUCTURES) / BCH 302',
-  favoriteLecturer: 'DR. A. B. ADELEKE',
+  homeAddress: 'NORTH CAMPUS, EDE',
+  phone: '09060542876',
+  email: 'iyanuoluwaalabi14@gmail.com',
+  facebookName: 'Iyanuoluwa Alabi',
+  viewAndDesireAboutCacyof: 'A glorious fellowship grooming leaders with holy standard.',
+  mentor: 'PASTOR / EVANG. A. B. ADELEKE',
+  entrepreneurPath: 'EVENT PLANNER & CATERING',
+  career: 'FINANCIAL ANALYST',
+  utmostDesireFromGod: 'Grace to fulfill purpose and remain steadfast in faith.',
+  hobbies: 'COOKING, SINGING, READING',
+  quote: 'WITH GOD ALL THINGS ARE POSSIBLE',
+  favoriteSong: 'GOODNESS OF GOD',
+  favoriteFood: 'RICE AND BEANS',
+  viewAboutLife: 'Life is a gift of grace to serve God and humanity.',
+  wordOfAdvice: 'Keep your eyes on Jesus no matter the storm.',
+  sourceOfInspiration: 'The Word of God and godly mentors.',
+  maritalStatus: 'SINGLE',
+  // Backward compatibility keys
+  favoriteCourse: 'BANKING AND FINANCE (HND 2)',
   favoriteCoursemate: 'BRO. TIMOTHY & SIS. DEBORAH',
-  quote: '“I CAN DO ALL THINGS THROUGH CHRIST WHO STRENGTHENS ME.” — PHIL 4:13',
-  asideCourse: 'SOFTWARE DEVELOPMENT & GOSPEL MUSIC MINISTRY',
+  asideCourse: 'FINANCIAL ANALYST',
   photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80',
   photoZoom: 100,
   photoX: 0,
@@ -161,6 +213,9 @@ const THEMES = [
 ];
 
 export default function FybFlyerGenerator() {
+  const [searchParams] = useSearchParams();
+  const paramMemberId = searchParams.get('memberId');
+
   const [fyb, setFyb] = useState<FybData>(() => {
     // Load persisted permanent logos from localStorage if available
     const savedLogo1 = localStorage.getItem('cacyof_permanent_fyb_logo1') || '';
@@ -181,22 +236,51 @@ export default function FybFlyerGenerator() {
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<'details' | 'photo' | 'theme' | 'logos' | 'saved'>('details');
   const [savedFlyers, setSavedFlyers] = useState<any[]>([]);
+  
+  // 9 Questionnaire fields matching the official template image
   const [customFields, setCustomFields] = useState<Array<{ id: number; label: string; key: keyof FybData }>>([
-    { id: 1, label: 'NAME', key: 'name' },
+    { id: 1, label: 'NICKNAME', key: 'nickname' },
     { id: 2, label: 'DOB', key: 'dob' },
-    { id: 3, label: 'STATE OF ORIGIN', key: 'stateOfOrigin' },
-    { id: 4, label: 'HOBBIES', key: 'hobbies' },
-    { id: 5, label: 'FAVORITE COURSE', key: 'favoriteCourse' },
-    { id: 6, label: 'FAVORITE LECTURER', key: 'favoriteLecturer' },
-    { id: 7, label: 'FAVORITE COURSEMATE', key: 'favoriteCoursemate' },
-    { id: 8, label: 'QUOTE', key: 'quote' },
-    { id: 9, label: 'ASIDE COURSE, ANY OTHER?', key: 'asideCourse' },
+    { id: 3, label: 'DEPARTMENT / COURSE', key: 'department' },
+    { id: 4, label: 'LEVEL & UNIT', key: 'unitInFellowship' },
+    { id: 5, label: 'STATE OF ORIGIN', key: 'stateOfOrigin' },
+    { id: 6, label: 'YOUR MENTOR', key: 'mentor' },
+    { id: 7, label: 'YOUR CAREER', key: 'career' },
+    { id: 8, label: 'HOBBIES', key: 'hobbies' },
+    { id: 9, label: 'FAVORITE QUOTE', key: 'quote' },
   ]);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const logo1InputRef = useRef<HTMLInputElement>(null);
   const logo2InputRef = useRef<HTMLInputElement>(null);
+
+  // Available field options from the official template
+  const TEMPLATE_FIELD_OPTIONS: Array<{ label: string; key: keyof FybData }> = [
+    { label: 'NICKNAME', key: 'nickname' },
+    { label: 'DOB', key: 'dob' },
+    { label: 'DEPARTMENT', key: 'department' },
+    { label: 'LEVEL', key: 'level' },
+    { label: 'UNIT IN FELLOWSHIP', key: 'unitInFellowship' },
+    { label: 'STATE OF ORIGIN', key: 'stateOfOrigin' },
+    { label: 'HOME ADDRESS', key: 'homeAddress' },
+    { label: 'PHONE NO(S)', key: 'phone' },
+    { label: 'EMAIL', key: 'email' },
+    { label: 'FACEBOOK NAME', key: 'facebookName' },
+    { label: 'VIEW & DESIRE ABOUT CACYOF', key: 'viewAndDesireAboutCacyof' },
+    { label: 'YOUR MENTOR', key: 'mentor' },
+    { label: 'ENTREPRENEUR PATH', key: 'entrepreneurPath' },
+    { label: 'YOUR CAREER', key: 'career' },
+    { label: 'YOUR UTMOST DESIRE FROM GOD', key: 'utmostDesireFromGod' },
+    { label: 'HOBBIES', key: 'hobbies' },
+    { label: 'FAVORITE QUOTE', key: 'quote' },
+    { label: 'FAVORITE SONG', key: 'favoriteSong' },
+    { label: 'FAVORITE FOOD', key: 'favoriteFood' },
+    { label: 'YOUR VIEW ABOUT LIFE', key: 'viewAboutLife' },
+    { label: 'WORD OF ADVICE', key: 'wordOfAdvice' },
+    { label: 'SOURCE OF INSPIRATION', key: 'sourceOfInspiration' },
+    { label: 'MARITAL STATUS', key: 'maritalStatus' }
+  ];
 
   // Fetch registered members and saved flyer list
   useEffect(() => {
@@ -214,6 +298,13 @@ export default function FybFlyerGenerator() {
 
       if (data && !error) {
         setMembers(data);
+        // If URL has memberId param, auto select
+        if (paramMemberId) {
+          const matched = data.find((m: any) => m.id === paramMemberId);
+          if (matched) {
+            handleMemberSelect(matched.id, data);
+          }
+        }
       }
     } catch (err) {
       console.warn('Could not load member profiles for FYB auto-fill:', err);
@@ -233,21 +324,51 @@ export default function FybFlyerGenerator() {
     }
   };
 
-  const handleMemberSelect = (memberId: string) => {
+  const handleMemberSelect = (memberId: string, memberList = members) => {
     setSelectedMemberId(memberId);
     if (!memberId) return;
 
-    const m = members.find((item) => item.id === memberId);
+    const m = memberList.find((item: any) => item.id === memberId);
     if (m) {
+      const cleanedFullName = formatCleanFullName(m.full_name || '');
+      const nicknameVal = (m.nickname || m.alias || m.preferred_name || 'N/A').toUpperCase();
+
+      const unitVal = m.church_position 
+        ? `${m.academic_level || ''} (${m.church_position})`.trim()
+        : (m.unit_in_fellowship || m.church_role || 'MEMBER').toUpperCase();
+
+      const dobVal = m.date_of_birth 
+        ? new Date(m.date_of_birth).toLocaleDateString('en-GB', { day: 'numeric', month: 'numeric' })
+        : (m.dob ? m.dob.toUpperCase() : '23/12');
+
       setFyb((prev) => ({
         ...prev,
-        name: (m.full_name || prev.name).toUpperCase(),
-        department: m.department ? m.department.toUpperCase() : prev.favoriteCourse,
+        name: cleanedFullName || prev.name,
+        department: (m.department || prev.department).toUpperCase(),
+        level: (m.academic_level || prev.level).toUpperCase(),
+        unitInFellowship: unitVal.toUpperCase(),
+        dob: dobVal,
+        nickname: nicknameVal,
+        stateOfOrigin: (m.state_of_origin || prev.stateOfOrigin).toUpperCase(),
+        homeAddress: m.contact_address || m.home_address || prev.homeAddress,
+        phone: m.phone_number || prev.phone,
+        email: m.email || prev.email,
+        facebookName: m.facebook_name || prev.facebookName,
+        viewAndDesireAboutCacyof: m.view_and_desire_about_cacyof || prev.viewAndDesireAboutCacyof,
+        mentor: m.mentor_name ? m.mentor_name.toUpperCase() : prev.mentor,
+        entrepreneurPath: (m.entrepreneurship_path || prev.entrepreneurPath).toUpperCase(),
+        career: (m.career_path || prev.career).toUpperCase(),
+        utmostDesireFromGod: m.utmost_desire_from_god || prev.utmostDesireFromGod,
         hobbies: m.hobbies ? m.hobbies.toUpperCase() : prev.hobbies,
-        favoriteCourse: m.department ? `${m.department} ${m.academic_level || ''}`.trim().toUpperCase() : prev.favoriteCourse,
-        favoriteLecturer: m.mentor_name ? m.mentor_name.toUpperCase() : prev.favoriteLecturer,
         quote: m.favorite_quote ? `“${m.favorite_quote.replace(/[“”"]/g, '')}”`.toUpperCase() : prev.quote,
-        asideCourse: (m.career_path || m.entrepreneurship_path || prev.asideCourse).toUpperCase(),
+        favoriteSong: (m.favorite_song || prev.favoriteSong).toUpperCase(),
+        favoriteFood: (m.favorite_food || prev.favoriteFood).toUpperCase(),
+        viewAboutLife: m.view_about_life || prev.viewAboutLife,
+        wordOfAdvice: m.word_of_advice || prev.wordOfAdvice,
+        sourceOfInspiration: m.source_of_inspiration || prev.sourceOfInspiration,
+        maritalStatus: (m.marital_status || 'Single').toUpperCase(),
+        favoriteCourse: m.department ? `${m.department} ${m.academic_level ? `(${m.academic_level})` : ''}`.trim().toUpperCase() : prev.favoriteCourse,
+        asideCourse: (m.career_path || prev.asideCourse).toUpperCase(),
         photoUrl: m.avatar_url || prev.photoUrl,
         photoZoom: 100,
         photoX: 0,
@@ -404,8 +525,8 @@ export default function FybFlyerGenerator() {
     ctx.save();
     const marginX = 38;
     let textStartX = marginX;
-    const logoY = 32;
-    const logoSize = 48;
+    const logoY = 30;
+    const logoSize = 46;
 
     const hasLogo1 = fyb.showLogos && fyb.logo1Url;
     const hasLogo2 = fyb.showLogos && fyb.logo2Url;
@@ -455,9 +576,9 @@ export default function FybFlyerGenerator() {
     } else {
       // Default Sleek Typographic Badge
       const badgeX = marginX;
-      const badgeY = 32;
-      const badgeW = 46;
-      const badgeH = 46;
+      const badgeY = 30;
+      const badgeW = 44;
+      const badgeH = 44;
       
       const badgeGrad = ctx.createLinearGradient(badgeX, badgeY, badgeX + badgeW, badgeY + badgeH);
       badgeGrad.addColorStop(0, '#F59E0B');
@@ -468,7 +589,7 @@ export default function FybFlyerGenerator() {
       ctx.fill();
 
       ctx.fillStyle = '#0A2540';
-      ctx.font = '900 15px "Montserrat", sans-serif';
+      ctx.font = '900 14px "Montserrat", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText('CAC', badgeX + badgeW / 2, badgeY + badgeH / 2);
@@ -479,46 +600,51 @@ export default function FybFlyerGenerator() {
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = '900 14px "Montserrat", sans-serif';
-    ctx.fillText(fyb.ministryName, textStartX, 51);
+    ctx.font = '900 13.5px "Montserrat", sans-serif';
+    ctx.fillText(fyb.ministryName, textStartX, 48);
 
     // Chapter Subtitle in Warm Gold
     ctx.fillStyle = '#FDE68A';
-    ctx.font = '800 11px "Montserrat", sans-serif';
-    ctx.fillText(fyb.chapterName, textStartX, 68);
+    ctx.font = '800 10.5px "Montserrat", sans-serif';
+    ctx.fillText(fyb.chapterName, textStartX, 65);
     ctx.restore();
 
-    // 3. MAIN HERO HEADLINE: "FYB OF THE" + "DAY"
+    // 3. MAIN HERO HEADLINE: "FYB OF THE" + "DAY" (PERFECTLY CENTER ALIGNED)
     ctx.save();
+    ctx.textAlign = 'center';
+    
+    // Top Headline centered
     ctx.fillStyle = '#38BDF8'; // Sky Blue
     ctx.font = '900 20px "Impact", "Montserrat", sans-serif';
-    ctx.fillText(fyb.headline, marginX, 122);
+    ctx.fillText(fyb.headline, width / 2, 118);
 
-    // Metallic Liquid Gold Gradient "DAY"
-    const dayGrad = ctx.createLinearGradient(marginX, 130, 240, 195);
+    // Metallic Liquid Gold Gradient "DAY" Centered
+    const dayGrad = ctx.createLinearGradient(width / 2 - 130, 126, width / 2 + 130, 185);
     dayGrad.addColorStop(0, activeTheme.dayGradStart);
     dayGrad.addColorStop(0.5, activeTheme.dayGradMid);
     dayGrad.addColorStop(1, activeTheme.dayGradEnd);
     ctx.fillStyle = dayGrad;
     ctx.font = '900 58px "Impact", "Montserrat", sans-serif';
-    ctx.fillText(fyb.subHeadline, marginX, 185);
+    ctx.fillText(fyb.subHeadline, width / 2, 178);
 
-    // Golden Accent Divider Line
-    const lineGrad = ctx.createLinearGradient(marginX, 198, width - marginX, 198);
-    lineGrad.addColorStop(0, activeTheme.shapeOutline);
+    // Symmetrically Centered Accent Divider Line
+    const lineGrad = ctx.createLinearGradient(width / 2 - 220, 192, width / 2 + 220, 192);
+    lineGrad.addColorStop(0, 'transparent');
+    lineGrad.addColorStop(0.25, activeTheme.shapeOutline);
     lineGrad.addColorStop(0.5, '#38BDF8');
+    lineGrad.addColorStop(0.75, activeTheme.shapeOutline);
     lineGrad.addColorStop(1, 'transparent');
     ctx.strokeStyle = lineGrad;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2.5;
     ctx.beginPath();
-    ctx.moveTo(marginX, 198);
-    ctx.lineTo(width - marginX, 198);
+    ctx.moveTo(width / 2 - 220, 192);
+    ctx.lineTo(width / 2 + 220, 192);
     ctx.stroke();
     ctx.restore();
 
-    // 4. LEFT COLUMN: FYB Photo Frame, Name Capsule & "Camp of Celebrity" Badge
+    // 4. LEFT COLUMN: FYB Photo Frame, Pure Full Name Capsule & "Camp of Celebrity" Badge
     const photoBoxX = marginX;
-    const photoBoxY = 216;
+    const photoBoxY = 212;
     const photoBoxW = 276;
     const photoBoxH = 370;
     const photoRadius = 20;
@@ -572,7 +698,7 @@ export default function FybFlyerGenerator() {
     }
     ctx.restore();
 
-    // Name Capsule Banner under Photo
+    // Pure Full Name Capsule Banner under Photo (Religious titles removed)
     const namePillY = photoBoxY + photoBoxH + 12;
     const namePillH = 42;
     const nameGrad = ctx.createLinearGradient(photoBoxX, namePillY, photoBoxX + photoBoxW, namePillY + namePillH);
@@ -593,13 +719,14 @@ export default function FybFlyerGenerator() {
     ctx.font = '900 12.5px "Montserrat", sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    const cleanName = fyb.name.length > 25 ? fyb.name.substring(0, 24) + '...' : fyb.name;
-    ctx.fillText(cleanName, photoBoxX + photoBoxW / 2, namePillY + namePillH / 2);
+    const cleanRealName = formatCleanFullName(fyb.name);
+    const displayRealName = cleanRealName.length > 25 ? cleanRealName.substring(0, 24) + '...' : cleanRealName;
+    ctx.fillText(displayRealName, photoBoxX + photoBoxW / 2, namePillY + namePillH / 2);
     ctx.restore();
 
     // Left Column Secondary Highlight Card: "CAMP OF CELEBRITY"
     const celebrityBoxY = namePillY + namePillH + 14;
-    const celebrityBoxH = 110;
+    const celebrityBoxH = 114;
     ctx.save();
     ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
     ctx.strokeStyle = activeTheme.shapeOutline;
@@ -616,17 +743,17 @@ export default function FybFlyerGenerator() {
 
     ctx.fillStyle = '#FFFFFF';
     ctx.font = '900 14px "Montserrat", sans-serif';
-    ctx.fillText('CAMP OF CELEBRITY', photoBoxX + photoBoxW / 2, celebrityBoxY + 54);
+    ctx.fillText('CAMP OF CELEBRITY', photoBoxX + photoBoxW / 2, celebrityBoxY + 56);
 
     ctx.fillStyle = activeTheme.shapeOutline;
     ctx.font = '14px sans-serif';
-    ctx.fillText('✦ ✦ ✦', photoBoxX + photoBoxW / 2, celebrityBoxY + 80);
+    ctx.fillText('✦ ✦ ✦', photoBoxX + photoBoxW / 2, celebrityBoxY + 84);
     ctx.restore();
 
-    // 5. RIGHT COLUMN: 9 Perfectly Formatted Compact Questionnaire Cards
+    // 5. RIGHT COLUMN: 9 Compact Questionnaire Cards (1. Nickname / N/A, followed by 8 fields)
     const rightColX = 336;
     const rightColW = width - rightColX - marginX; // 426px wide
-    const rightStartY = 216;
+    const rightStartY = 212;
     const cardHeight = 89;
     const cardGap = 8.5;
 
@@ -675,7 +802,8 @@ export default function FybFlyerGenerator() {
       // Content inside the card
       const textX = chipX + numChipW + 12;
       const label = field.label;
-      const rawValue = (fyb[field.key] as string) || '—';
+      const rawValue = (fyb[field.key] as string) || '';
+      const displayRaw = rawValue.trim() ? rawValue : 'N/A';
 
       // 1. Question Prompt Label
       ctx.textAlign = 'left';
@@ -684,12 +812,12 @@ export default function FybFlyerGenerator() {
       ctx.font = '900 9.5px "Montserrat", sans-serif';
       ctx.fillText(label, textX, itemY + 22);
 
-      // 2. Answer Value (Well-formatted, compact, charcoal black for high legibility)
+      // 2. Answer Value (Well-proportioned, charcoal black for crisp legibility)
       ctx.fillStyle = '#0F172A';
       ctx.font = '800 11.5px "Montserrat", "Segoe UI", sans-serif';
 
       const maxTextW = cardW - numChipW - 28;
-      let displayVal = rawValue;
+      let displayVal = displayRaw;
       if (ctx.measureText(displayVal).width > maxTextW) {
         while (displayVal.length > 3 && ctx.measureText(displayVal + '...').width > maxTextW) {
           displayVal = displayVal.substring(0, displayVal.length - 1);
@@ -732,8 +860,9 @@ export default function FybFlyerGenerator() {
       const mimeType = format === 'jpg' ? 'image/jpeg' : 'image/png';
       const dataUrl = await renderToCanvas(mimeType, 0.95);
 
+      const cleanName = formatCleanFullName(fyb.name);
       const link = document.createElement('a');
-      const filename = `CACYOF_FYB_${fyb.name.replace(/[^a-zA-Z0-9]/g, '_')}_800x1200.${format}`;
+      const filename = `CACYOF_FYB_${cleanName.replace(/[^a-zA-Z0-9]/g, '_')}_800x1200.${format}`;
       link.download = filename;
       link.href = dataUrl;
       link.click();
@@ -770,21 +899,27 @@ export default function FybFlyerGenerator() {
 
   // Save flyer to localStorage library
   const handleSaveFlyer = () => {
+    const cleanName = formatCleanFullName(fyb.name);
     const newEntry = {
       id: Date.now(),
-      name: fyb.name,
+      name: cleanName,
       fyb,
       themeId: activeTheme.id,
       date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
     };
-    const updated = [newEntry, ...savedFlyers.filter((s) => s.name !== fyb.name)].slice(0, 20);
+    const updated = [newEntry, ...savedFlyers.filter((s) => s.name !== cleanName)].slice(0, 20);
     setSavedFlyers(updated);
     localStorage.setItem('cacyof_saved_fyb_flyers', JSON.stringify(updated));
     alert('Flyer saved to FYB Library!');
   };
 
   const handleLoadSavedFlyer = (saved: any) => {
-    setFyb(saved.fyb);
+    const loadedFyb = {
+      ...DEFAULT_FYB_DATA,
+      ...saved.fyb,
+      mentor: saved.fyb.mentor || saved.fyb.favoriteLecturer || DEFAULT_FYB_DATA.mentor
+    };
+    setFyb(loadedFyb);
     const theme = THEMES.find((t) => t.id === saved.themeId) || THEMES[0];
     setActiveTheme(theme);
     setActiveTab('details');
@@ -895,12 +1030,31 @@ export default function FybFlyerGenerator() {
             {/* TAB 1: DETAILS & AUTO-FILL */}
             {activeTab === 'details' && (
               <div className="space-y-6">
+                {/* Top Banner: Quick Link to Executive & FYB Directory */}
+                <div className="bg-gradient-to-r from-[#0A2540] to-sky-900 text-white p-4 rounded-2xl shadow-sm flex items-center justify-between gap-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-9 h-9 rounded-xl bg-amber-400/20 text-[#D4AF37] flex items-center justify-center font-bold">
+                      <Shield size={18} />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold font-serif">Executive & FYB Directory</h4>
+                      <p className="text-[10px] text-gray-300">View & download all graduating brethren dossiers & spreadsheets.</p>
+                    </div>
+                  </div>
+                  <Link
+                    to="/dashboard/admin/executive-fyb"
+                    className="bg-[#D4AF37] hover:bg-amber-400 text-[#0A2540] px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all whitespace-nowrap shadow"
+                  >
+                    Open Hub →
+                  </Link>
+                </div>
+
                 {/* 1-Click Auto Fill from Profiles */}
                 <div className="bg-gradient-to-r from-sky-50 to-amber-50 p-4 rounded-2xl border border-sky-100 space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-bold text-[#0A2540] flex items-center space-x-1.5 uppercase tracking-wider">
                       <UserCheck size={16} className="text-amber-500" />
-                      <span>Auto-Fill from Registered FYBs</span>
+                      <span>Auto-Fill from Registered FYBs & Executives</span>
                     </label>
                     {loadingMembers && <span className="text-[10px] text-gray-400">Loading...</span>}
                   </div>
@@ -912,18 +1066,37 @@ export default function FybFlyerGenerator() {
                     <option value="">-- Select member to prefill details --</option>
                     {members.map((m) => (
                       <option key={m.id} value={m.id}>
-                        {m.full_name || 'Unnamed'} ({m.student_status || m.academic_level || 'Member'})
+                        {formatCleanFullName(m.full_name || 'Unnamed')} ({m.church_position || m.student_status || m.academic_level || 'Member'})
                       </option>
                     ))}
                   </select>
                 </div>
 
-                {/* 9 Questionnaire Fields matching the template */}
+                {/* Primary Full Name under Photo (Secular) */}
+                <div className="bg-amber-50/50 p-3.5 rounded-xl border border-amber-200 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] font-black text-[#0A2540] uppercase tracking-wider">
+                      Official Full Name (Under Photo)
+                    </label>
+                    <span className="text-[9px] text-amber-700 font-bold bg-amber-100 px-2 py-0.5 rounded">
+                      Secular / Clean Format
+                    </span>
+                  </div>
+                  <input
+                    type="text"
+                    value={fyb.name}
+                    onChange={(e) => setFyb((prev) => ({ ...prev, name: formatCleanFullName(e.target.value) }))}
+                    className="w-full px-3 py-1.5 rounded-lg border border-amber-300 text-xs font-bold text-[#0A2540] focus:outline-none focus:border-amber-500 bg-white"
+                    placeholder="e.g. ALABI IYANUOLUWA"
+                  />
+                </div>
+
+                {/* 9 Questionnaire Fields (Field 1: NICKNAME or N/A) */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between border-b border-gray-100 pb-2">
                     <span className="text-xs font-bold text-[#0A2540] uppercase tracking-widest flex items-center space-x-1.5">
                       <Sparkles size={14} className="text-amber-500" />
-                      <span>9 Pro Questionnaire Items</span>
+                      <span>9 Flyer Card Items (Official Template)</span>
                     </span>
                     <button
                       onClick={() => setFyb(DEFAULT_FYB_DATA)}
@@ -935,10 +1108,10 @@ export default function FybFlyerGenerator() {
                   </div>
 
                   {customFields.map((field, idx) => (
-                    <div key={field.id} className="bg-gray-50/80 p-2.5 rounded-xl border border-gray-100 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-1.5 flex-1 mr-2">
-                          <span className="inline-block w-4 h-4 rounded-md bg-gradient-to-r from-sky-600 to-amber-500 text-white text-[9px] text-center leading-4 font-black">
+                    <div key={field.id} className="bg-gray-50/80 p-2.5 rounded-xl border border-gray-100 space-y-1.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center space-x-1.5 flex-1 min-w-0">
+                          <span className="inline-block w-4 h-4 rounded-md bg-gradient-to-r from-sky-600 to-amber-500 text-white text-[9px] text-center leading-4 font-black shrink-0">
                             {idx + 1}
                           </span>
                           <input
@@ -953,6 +1126,30 @@ export default function FybFlyerGenerator() {
                             className="bg-transparent text-[10px] font-black text-amber-800 uppercase tracking-wider border-b border-dashed border-gray-300 focus:border-amber-500 focus:outline-none w-full"
                           />
                         </div>
+
+                        {/* Field key selector */}
+                        <select
+                          value={field.key}
+                          onChange={(e) => {
+                            const newKey = e.target.value as keyof FybData;
+                            const option = TEMPLATE_FIELD_OPTIONS.find(o => o.key === newKey);
+                            setCustomFields((prev) =>
+                              prev.map((item, i) => i === idx ? { 
+                                ...item, 
+                                key: newKey, 
+                                label: option ? option.label : item.label 
+                              } : item)
+                            );
+                          }}
+                          className="text-[9px] font-bold text-gray-500 bg-white border border-gray-200 rounded px-1.5 py-0.5"
+                          title="Switch questionnaire question"
+                        >
+                          {TEMPLATE_FIELD_OPTIONS.map((opt) => (
+                            <option key={opt.key} value={opt.key}>
+                              {opt.label}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                       <input
                         type="text"
@@ -964,7 +1161,7 @@ export default function FybFlyerGenerator() {
                           }))
                         }
                         className="w-full px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-bold text-[#0A2540] focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 bg-white"
-                        placeholder={`Enter ${field.label}...`}
+                        placeholder={field.key === 'nickname' ? 'Enter Nickname (or leave empty for N/A)...' : `Enter ${field.label}...`}
                       />
                     </div>
                   ))}
@@ -1395,13 +1592,13 @@ export default function FybFlyerGenerator() {
                 </div>
               </div>
 
-              {/* 2. Main Title Row: "FYB OF THE" + "DAY" */}
-              <div className="relative z-10 px-1 mt-0.5">
-                <div className="text-[14px] font-black text-sky-300 tracking-wider leading-none uppercase drop-shadow-sm font-sans">
+              {/* 2. Main Title Row: "FYB OF THE" + "DAY" (WELL ALIGNED AT CENTER) */}
+              <div className="relative z-10 px-1 mt-0.5 text-center flex flex-col items-center justify-center">
+                <div className="text-[13px] font-black text-sky-300 tracking-wider leading-none uppercase drop-shadow-sm font-sans">
                   {fyb.headline}
                 </div>
                 <div 
-                  className="text-[40px] font-black tracking-tighter leading-none uppercase bg-clip-text text-transparent drop-shadow-md"
+                  className="text-[38px] font-black tracking-tighter leading-none uppercase bg-clip-text text-transparent drop-shadow-md"
                   style={{
                     backgroundImage: `linear-gradient(90deg, ${activeTheme.dayGradStart}, ${activeTheme.dayGradMid}, ${activeTheme.dayGradEnd})`
                   }}
@@ -1409,16 +1606,16 @@ export default function FybFlyerGenerator() {
                   {fyb.subHeadline}
                 </div>
                 <div 
-                  className="h-0.5 w-full mt-1 rounded-full opacity-80"
+                  className="h-0.5 w-48 mt-1 rounded-full opacity-85"
                   style={{
-                    background: `linear-gradient(90deg, ${activeTheme.shapeOutline}, #38BDF8, transparent)`
+                    background: `linear-gradient(90deg, transparent, ${activeTheme.shapeOutline}, #38BDF8, ${activeTheme.shapeOutline}, transparent)`
                   }}
                 />
               </div>
 
               {/* 3. Center Split: Left Frame & Right 9 Questionnaire Cards */}
               <div className="relative z-10 grid grid-cols-12 gap-2.5 my-auto items-stretch px-1">
-                {/* Left Side: Photo Frame + Name Banner + Camp of Celebrity (5 cols) */}
+                {/* Left Side: Photo Frame + Secular Full Name Banner + Camp of Celebrity (5 cols) */}
                 <div className="col-span-5 flex flex-col justify-between">
                   {/* Photo Container with Custom Shape Outline */}
                   <div
@@ -1449,10 +1646,10 @@ export default function FybFlyerGenerator() {
                     )}
                   </div>
 
-                  {/* Name Pill under photo */}
+                  {/* Pure Secular Full Name Pill under photo */}
                   <div className="w-full mt-1.5 py-1 px-2 rounded-xl text-center shadow-lg bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 border border-amber-200">
                     <span className="text-[9.5px] font-black text-[#0A2540] uppercase tracking-wider block truncate">
-                      {fyb.name}
+                      {formatCleanFullName(fyb.name)}
                     </span>
                   </div>
 
@@ -1469,7 +1666,7 @@ export default function FybFlyerGenerator() {
                   </div>
                 </div>
 
-                {/* Right Side: 9 Compact Questionnaire Cards (7 cols) */}
+                {/* Right Side: 9 Compact Questionnaire Cards (7 cols, 1. Nickname / N/A) */}
                 <div className="col-span-7 space-y-1">
                   {customFields.map((field, idx) => (
                     <div
@@ -1499,7 +1696,7 @@ export default function FybFlyerGenerator() {
                           {field.label}
                         </div>
                         <div className="text-[8px] font-black text-slate-900 truncate leading-tight mt-0.5">
-                          {String(fyb[field.key] || '—')}
+                          {String(fyb[field.key] || '').trim() || 'N/A'}
                         </div>
                       </div>
                     </div>
