@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom';
 import Sidebar from '../../components/dashboard/Sidebar';
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
@@ -17,10 +17,12 @@ import {
   User,
   Shield,
   Video,
-  Tv
+  Tv,
+  Sparkles
 } from 'lucide-react';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, ImageRun, WidthType } from 'docx';
 import { saveAs } from 'file-saver';
+import FybFlyerGenerator from './FybFlyerGenerator';
 
 export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -49,6 +51,7 @@ export default function AdminDashboard() {
             <Route path="/quotes" element={<QuoteReviewer />} />
             <Route path="/leaders" element={<LeaderManager />} />
             <Route path="/live" element={<LiveManager />} />
+            <Route path="/fyb-flyer" element={<FybFlyerGenerator />} />
           </Routes>
         </div>
       </div>
@@ -773,6 +776,13 @@ function MemberDirectory() {
                       >
                         <Shield size={18} />
                       </button>
+                      <Link 
+                        to="/dashboard/admin/fyb-flyer"
+                        className="w-10 h-10 flex items-center justify-center text-orange-500 bg-orange-50 rounded-xl hover:bg-orange-500 hover:text-white transition-all shadow-sm"
+                        title="Generate FYB Flyer"
+                      >
+                        <Sparkles size={18} />
+                      </Link>
                       <button 
                         onClick={() => generateWordDoc(m)}
                         className="w-10 h-10 flex items-center justify-center text-blue-500 bg-blue-50 rounded-xl hover:bg-blue-500 hover:text-white transition-all shadow-sm"

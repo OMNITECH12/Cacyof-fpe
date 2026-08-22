@@ -9,7 +9,8 @@ import {
   Send,
   LayoutDashboard,
   X,
-  Video
+  Video,
+  Sparkles
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
@@ -35,6 +36,7 @@ export default function Sidebar({ role, isOpen, onClose }: SidebarProps) {
 
   const adminLinks = [
     { name: 'Membership', path: '/dashboard/admin', icon: Users },
+    { name: 'FYB Flyer Studio', path: '/dashboard/admin/fyb-flyer', icon: Sparkles },
     { name: 'Blog Studio', path: '/dashboard/admin/blog', icon: FileText },
     { name: 'Broadcast', path: '/dashboard/admin/broadcast', icon: Send },
     { name: 'Quote Desk', path: '/dashboard/admin/quotes', icon: Quote },
