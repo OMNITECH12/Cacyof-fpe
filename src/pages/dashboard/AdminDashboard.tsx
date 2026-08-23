@@ -446,17 +446,30 @@ function MemberDirectory() {
         }
 
         elements.push(
-          new Paragraph({ children: [new TextRun({ text: "Email: ", bold: true }), new TextRun(m.email || "N/A")] }),
-          new Paragraph({ children: [new TextRun({ text: "Phone Contact: ", bold: true }), new TextRun(m.phone_number || "N/A")] }),
-          new Paragraph({ children: [new TextRun({ text: "Academic Unit (Dept): ", bold: true }), new TextRun(m.department || "N/A")] }),
-          new Paragraph({ children: [new TextRun({ text: "Academic Session: ", bold: true }), new TextRun(m.academic_session || "N/A")] }),
-          new Paragraph({ children: [new TextRun({ text: "Level: ", bold: true }), new TextRun(m.academic_level || "N/A")] }),
-          new Paragraph({ children: [new TextRun({ text: "Church Role: ", bold: true }), new TextRun(`${m.church_role || 'member'}  (${m.church_position || 'No active position'})`)] }),
-          new Paragraph({ children: [new TextRun({ text: "Assigned Mentor: ", bold: true }), new TextRun(m.mentor_name || "N/A")] }),
-          new Paragraph({ children: [new TextRun({ text: "Career Ambition: ", bold: true }), new TextRun(m.career_path || "N/A")] }),
-          new Paragraph({ children: [new TextRun({ text: "Business Venture: ", bold: true }), new TextRun(m.entrepreneurship_path || "N/A")] }),
-          new Paragraph({ children: [new TextRun({ text: "Favorite Nourishment: ", bold: true }), new TextRun(m.favorite_food || "N/A")] }),
-          new Paragraph({ children: [new TextRun({ text: "Favorite Quote: ", bold: true }), new TextRun({ text: `"${m.favorite_quote || 'N/A'}"`, italics: true })] }),
+          new Paragraph({ children: [new TextRun({ text: "1. Full Name: ", bold: true }), new TextRun(m.full_name || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "2. Department: ", bold: true }), new TextRun(m.department || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "3. Level: ", bold: true }), new TextRun(m.academic_level || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "4. Unit in Fellowship: ", bold: true }), new TextRun(m.unit_in_fellowship || m.church_position || m.church_role || "Member")] }),
+          new Paragraph({ children: [new TextRun({ text: "5. DOB: ", bold: true }), new TextRun(m.dob || m.date_of_birth || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "6. Nickname: ", bold: true }), new TextRun(m.nickname || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "7. State of Origin: ", bold: true }), new TextRun(m.state_of_origin || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "8. Home Address: ", bold: true }), new TextRun(m.home_address || m.contact_address || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "9. Phone No(s): ", bold: true }), new TextRun(m.phone_number || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "10. Email: ", bold: true }), new TextRun(m.email || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "11. Facebook Name: ", bold: true }), new TextRun(m.facebook_name || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "12. View and Desire About CACYOF: ", bold: true }), new TextRun(m.view_and_desire_about_cacyof || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "13. Your Mentor: ", bold: true }), new TextRun(m.mentor_name || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "14. Entrepreneur Path: ", bold: true }), new TextRun(m.entrepreneurship_path || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "15. Your Career: ", bold: true }), new TextRun(m.career_path || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "16. Utmost Desire From God: ", bold: true }), new TextRun(m.utmost_desire_from_god || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "17. Hobbies: ", bold: true }), new TextRun(m.hobbies || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "18. Favorite Quote: ", bold: true }), new TextRun({ text: `"${m.favorite_quote || 'N/A'}"`, italics: true })] }),
+          new Paragraph({ children: [new TextRun({ text: "19. Favorite Song: ", bold: true }), new TextRun(m.favorite_song || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "20. Favorite Food: ", bold: true }), new TextRun(m.favorite_food || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "21. View About Life: ", bold: true }), new TextRun(m.view_about_life || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "22. Word of Advice: ", bold: true }), new TextRun(m.word_of_advice || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "23. Source of Inspiration: ", bold: true }), new TextRun(m.source_of_inspiration || "N/A")] }),
+          new Paragraph({ children: [new TextRun({ text: "24. Marital Status: ", bold: true }), new TextRun(m.marital_status || "Single")] }),
           new Paragraph({
             text: "═".repeat(60),
             spacing: { before: 250, after: 400 }
@@ -520,47 +533,35 @@ function MemberDirectory() {
     }
 
     docElements.push(
-      new Paragraph({ children: [new TextRun({ text: "Full Name: ", bold: true }), new TextRun(m.full_name || "N/A")] }),
-      new Paragraph({ children: [new TextRun({ text: "Email: ", bold: true }), new TextRun(m.email || "N/A")] }),
-      new Paragraph({ children: [new TextRun({ text: "Phone Line: ", bold: true }), new TextRun(m.phone_number || "N/A")] }),
-      new Paragraph({ children: [new TextRun({ text: "Department: ", bold: true }), new TextRun(m.department || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "1. Full Name: ", bold: true }), new TextRun(m.full_name || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "2. Department: ", bold: true }), new TextRun(m.department || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "3. Level: ", bold: true }), new TextRun(m.academic_level || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "4. Unit in Fellowship: ", bold: true }), new TextRun(m.unit_in_fellowship || m.church_position || m.church_role || "Member")] }),
+      new Paragraph({ children: [new TextRun({ text: "5. DOB: ", bold: true }), new TextRun(m.dob || m.date_of_birth || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "6. Nickname: ", bold: true }), new TextRun(m.nickname || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "7. State of Origin: ", bold: true }), new TextRun(m.state_of_origin || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "8. Home Address: ", bold: true }), new TextRun(m.home_address || m.contact_address || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "9. Phone No(s): ", bold: true }), new TextRun(m.phone_number || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "10. Email: ", bold: true }), new TextRun(m.email || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "11. Facebook Name: ", bold: true }), new TextRun(m.facebook_name || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "12. View and Desire About CACYOF: ", bold: true }), new TextRun(m.view_and_desire_about_cacyof || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "13. Your Mentor: ", bold: true }), new TextRun(m.mentor_name || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "14. Entrepreneur Path: ", bold: true }), new TextRun(m.entrepreneurship_path || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "15. Your Career: ", bold: true }), new TextRun(m.career_path || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "16. Utmost Desire From God: ", bold: true }), new TextRun(m.utmost_desire_from_god || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "17. Hobbies: ", bold: true }), new TextRun(m.hobbies || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "18. Favorite Quote: ", bold: true }), new TextRun({ text: `"${m.favorite_quote || 'N/A'}"`, italics: true })] }),
+      new Paragraph({ children: [new TextRun({ text: "19. Favorite Song: ", bold: true }), new TextRun(m.favorite_song || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "20. Favorite Food: ", bold: true }), new TextRun(m.favorite_food || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "21. View About Life: ", bold: true }), new TextRun(m.view_about_life || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "22. Word of Advice: ", bold: true }), new TextRun(m.word_of_advice || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "23. Source of Inspiration: ", bold: true }), new TextRun(m.source_of_inspiration || "N/A")] }),
+      new Paragraph({ children: [new TextRun({ text: "24. Marital Status: ", bold: true }), new TextRun(m.marital_status || "Single")] }),
+      new Paragraph({ text: "", spacing: { after: 150 } }),
       new Paragraph({ children: [new TextRun({ text: "Academic Session: ", bold: true }), new TextRun(m.academic_session || "N/A")] }),
-      new Paragraph({ children: [new TextRun({ text: "Level: ", bold: true }), new TextRun(m.academic_level || "N/A")] }),
       new Paragraph({ children: [new TextRun({ text: "Student Status: ", bold: true }), new TextRun(m.student_status || "N/A")] }),
-      
-      new Paragraph({ text: "", spacing: { after: 200 } }),
-      new Paragraph({
-        children: [new TextRun({ text: "CHURCH IDENTITY & ASSIGNMENT", bold: true, size: 28, color: "0A2540" })],
-        spacing: { after: 200 }
-      }),
       new Paragraph({ children: [new TextRun({ text: "Church Role: ", bold: true }), new TextRun(m.church_role || "member")] }),
-      new Paragraph({ children: [new TextRun({ text: "Church Office: ", bold: true }), new TextRun(m.church_position || "N/A")] }),
-
-      new Paragraph({ text: "", spacing: { after: 200 } }),
-      new Paragraph({
-        children: [new TextRun({ text: "VISION & INTERESTS", bold: true, size: 28, color: "0A2540" })],
-        spacing: { after: 200 }
-      }),
-      new Paragraph({ children: [new TextRun({ text: "Career Path: ", bold: true }), new TextRun(m.career_path || "N/A")] }),
-      new Paragraph({ children: [new TextRun({ text: "Entrepreneurship: ", bold: true }), new TextRun(m.entrepreneurship_path || "N/A")] }),
-      new Paragraph({ children: [new TextRun({ text: "Assigned Mentor: ", bold: true }), new TextRun(m.mentor_name || "N/A")] }),
-      
-      new Paragraph({ text: "", spacing: { after: 200 } }),
-      new Paragraph({
-        children: [new TextRun({ text: "PERSONAL INSIGHT", bold: true, size: 28, color: "0A2540" })],
-        spacing: { after: 200 }
-      }),
-      new Paragraph({
-        children: [
-          new TextRun({ text: "Favorite Food: ", bold: true }), new TextRun(m.favorite_food || "N/A"),
-        ]
-      }),
-      new Paragraph({
-        children: [
-          new TextRun({ text: "Favorite Quote: ", bold: true }), 
-          new TextRun({ text: `"${m.favorite_quote || 'N/A'}"`, italics: true }),
-        ]
-      })
+      new Paragraph({ children: [new TextRun({ text: "Church Office: ", bold: true }), new TextRun(m.church_position || "N/A")] })
     );
 
     const doc = new Document({
