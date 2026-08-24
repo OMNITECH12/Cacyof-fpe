@@ -18,11 +18,13 @@ import {
   Shield,
   Video,
   Tv,
-  Sparkles
+  Sparkles,
+  CheckCircle2
 } from 'lucide-react';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, ImageRun, WidthType } from 'docx';
 import { saveAs } from 'file-saver';
 import FybFlyerGenerator from './FybFlyerGenerator';
+import UpdateTracker, { auditMemberProfile } from './UpdateTracker';
 
 export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -46,6 +48,7 @@ export default function AdminDashboard() {
         <div className="max-w-6xl mx-auto">
           <Routes>
             <Route path="/" element={<MemberDirectory />} />
+            <Route path="/tracking" element={<UpdateTracker />} />
             <Route path="/blog" element={<BlogManager />} />
             <Route path="/broadcast" element={<NotificationBroadcaster />} />
             <Route path="/quotes" element={<QuoteReviewer />} />
@@ -599,6 +602,31 @@ function MemberDirectory() {
         </div>
       </div>
 
+      {/* Information Update Tracking Quick Banner */}
+      <div className="bg-gradient-to-r from-[#0A2540] via-[#12365a] to-[#0A2540] p-5 rounded-2xl text-white shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-white/10">
+        <div className="flex items-center space-x-3.5">
+          <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/20 border border-[#D4AF37]/40 flex items-center justify-center text-[#D4AF37] shrink-0">
+            <CheckCircle2 size={22} />
+          </div>
+          <div>
+            <div className="text-xs font-bold uppercase tracking-wider text-[#D4AF37] flex items-center space-x-1.5">
+              <span>Real-Time Update Tracking System</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse inline-block" />
+            </div>
+            <p className="text-sm font-medium text-white/90 mt-0.5">
+              Track who has filled the 24-questionnaire (FYB & General), see missing items & send 1-click reminders.
+            </p>
+          </div>
+        </div>
+        <Link
+          to="/dashboard/admin/tracking"
+          className="inline-flex items-center space-x-2 bg-[#D4AF37] text-[#0A2540] px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-md hover:bg-amber-400 transition-all shrink-0 cursor-pointer"
+        >
+          <span>Open Full Tracker</span>
+          <Sparkles size={15} />
+        </Link>
+      </div>
+
       {/* Category Tabs */}
       <div className="flex flex-wrap items-center gap-2 border-b border-gray-100 pb-2">
         {['All', 'Fresher', 'Staylite', 'FYB', 'Alumni'].map((cat) => {
@@ -720,7 +748,9 @@ function MemberDirectory() {
                 <tr><td colSpan={3} className="px-10 py-20 text-center"><Loader2 className="animate-spin inline text-[#D4AF37]" size={32} /></td></tr>
               ) : filtered.length === 0 ? (
                 <tr><td colSpan={3} className="px-10 py-20 text-center text-gray-300 font-light italic">No registered members found under this selection.</td></tr>
-              ) : filtered.map((m) => (
+              ) : filtered.map((m) => {
+                const audit = auditMemberProfile(m);
+                return (
                 <tr key={m.id} className="hover:bg-gray-50/50 transition-colors group">
                   <td className="px-10 py-6">
                     <div className="flex items-center space-x-4">
@@ -753,6 +783,23 @@ function MemberDirectory() {
                           {m.church_role} {m.church_position && `— ${m.church_position}`}
                         </span>
                       )}
+                      {/* Update completion tracking badge */}
+                      <Link
+                        to="/dashboard/admin/tracking"
+                        className={`px-2 py-0.5 text-[9px] rounded font-black uppercase tracking-wider border flex items-center gap-1 transition-all ${
+                          audit.status === 'complete'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                            : audit.status === 'mostly_complete'
+                            ? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
+                            : audit.status === 'in_progress'
+                            ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'
+                            : 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100'
+                        }`}
+                        title={`${audit.completedCount}/24 fields completed • Last updated: ${audit.relativeTime}`}
+                      >
+                        <CheckCircle2 size={10} />
+                        <span>{audit.percentage}% Updated</span>
+                      </Link>
                       {m.role === 'admin' ? (
                         <span className="px-2 py-0.5 text-[9px] bg-purple-50 text-purple-700 rounded font-bold uppercase tracking-wider border border-purple-200 flex items-center gap-1">
                           <Shield size={10} className="text-purple-600" /> Admin
@@ -801,7 +848,8 @@ function MemberDirectory() {
                     </div>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>

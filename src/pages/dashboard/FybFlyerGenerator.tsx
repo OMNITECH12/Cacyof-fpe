@@ -121,91 +121,91 @@ const DEFAULT_FYB_DATA: FybData = {
 
 const THEMES = [
   {
-    id: 'aurora-sky-gold',
-    name: 'Aurora Sky & 24K Liquid Gold (Signature)',
-    bgCss: 'linear-gradient(135deg, #0284C7 0%, #0369A1 26%, #0A2540 60%, #B45309 86%, #F59E0B 100%)',
+    id: 'deepblue-skyblue-gold',
+    name: 'Deep Blue & Radiant Sky Blue (Signature)',
+    bgCss: 'linear-gradient(135deg, #0284C7 0%, #0369A1 25%, #0A2540 60%, #031326 100%)',
     canvasBgStart: '#0284C7',
     canvasBgMid1: '#0369A1',
     canvasBgMid2: '#0A2540',
-    canvasBgEnd: '#F59E0B',
+    canvasBgEnd: '#031326',
     shapeOutline: '#FBBF24',
-    shapeGlow: 'rgba(245, 158, 11, 0.45)',
+    shapeGlow: 'rgba(56, 189, 248, 0.45)',
     chipGradientStart: '#0284C7',
     chipGradientEnd: '#0A2540',
-    chipText: '#FDE68A',
-    labelColor: '#B45309',
-    dayGradStart: '#FEF08A',
-    dayGradMid: '#F59E0B',
-    dayGradEnd: '#B45309'
-  },
-  {
-    id: 'celestial-azure-amber',
-    name: 'Celestial Azure Glow & Amber Sunset',
-    bgCss: 'linear-gradient(135deg, #0EA5E9 0%, #0284C7 30%, #1E3A8A 65%, #B45309 88%, #F59E0B 100%)',
-    canvasBgStart: '#0EA5E9',
-    canvasBgMid1: '#0284C7',
-    canvasBgMid2: '#1E3A8A',
-    canvasBgEnd: '#B45309',
-    shapeOutline: '#38BDF8',
-    shapeGlow: 'rgba(56, 189, 248, 0.45)',
-    chipGradientStart: '#0EA5E9',
-    chipGradientEnd: '#1E3A8A',
     chipText: '#FFFFFF',
     labelColor: '#0284C7',
+    dayGradStart: '#FEF08A',
+    dayGradMid: '#F59E0B',
+    dayGradEnd: '#D97706'
+  },
+  {
+    id: 'celestial-azure-deepblue',
+    name: 'Celestial Sky Blue & Deep Navy',
+    bgCss: 'linear-gradient(135deg, #38BDF8 0%, #0EA5E9 28%, #1E3A8A 65%, #0A2540 100%)',
+    canvasBgStart: '#38BDF8',
+    canvasBgMid1: '#0EA5E9',
+    canvasBgMid2: '#1E3A8A',
+    canvasBgEnd: '#0A2540',
+    shapeOutline: '#38BDF8',
+    shapeGlow: 'rgba(56, 189, 248, 0.5)',
+    chipGradientStart: '#0EA5E9',
+    chipGradientEnd: '#0A2540',
+    chipText: '#FFFFFF',
+    labelColor: '#0369A1',
     dayGradStart: '#7DD3FC',
     dayGradMid: '#38BDF8',
     dayGradEnd: '#F59E0B'
   },
   {
     id: 'royal-sapphire-gold',
-    name: 'Imperial Sapphire, Midnight & Molten Gold',
-    bgCss: 'linear-gradient(145deg, #1E40AF 0%, #0A2540 40%, #0284C7 70%, #92400E 88%, #D4AF37 100%)',
-    canvasBgStart: '#1E40AF',
-    canvasBgMid1: '#0A2540',
-    canvasBgMid2: '#0284C7',
-    canvasBgEnd: '#D4AF37',
+    name: 'Imperial Sapphire, Deep Blue & Molten Gold',
+    bgCss: 'linear-gradient(145deg, #0284C7 0%, #1E40AF 35%, #0A2540 70%, #020C1B 100%)',
+    canvasBgStart: '#0284C7',
+    canvasBgMid1: '#1E40AF',
+    canvasBgMid2: '#0A2540',
+    canvasBgEnd: '#020C1B',
     shapeOutline: '#F59E0B',
     shapeGlow: 'rgba(212, 175, 55, 0.5)',
-    chipGradientStart: '#1E40AF',
+    chipGradientStart: '#0284C7',
     chipGradientEnd: '#0A2540',
     chipText: '#FEF08A',
-    labelColor: '#B45309',
+    labelColor: '#0284C7',
     dayGradStart: '#FDE68A',
     dayGradMid: '#F59E0B',
     dayGradEnd: '#78350F'
   },
   {
-    id: 'deep-ocean-puregold',
-    name: 'Deep Oceanic Cyan & Sunlit Gold Horizon',
-    bgCss: 'linear-gradient(135deg, #0369A1 0%, #082F49 45%, #065F46 75%, #D97706 100%)',
-    canvasBgStart: '#0369A1',
-    canvasBgMid1: '#082F49',
-    canvasBgMid2: '#065F46',
-    canvasBgEnd: '#D97706',
-    shapeOutline: '#FBBF24',
-    shapeGlow: 'rgba(251, 191, 36, 0.4)',
-    chipGradientStart: '#0369A1',
-    chipGradientEnd: '#082F49',
-    chipText: '#6EE7B7',
-    labelColor: '#047857',
-    dayGradStart: '#6EE7B7',
+    id: 'deep-ocean-cyan',
+    name: 'Deep Oceanic Navy & Sky Cyan Horizon',
+    bgCss: 'linear-gradient(135deg, #0EA5E9 0%, #0369A1 30%, #0A2540 65%, #020E1C 100%)',
+    canvasBgStart: '#0EA5E9',
+    canvasBgMid1: '#0369A1',
+    canvasBgMid2: '#0A2540',
+    canvasBgEnd: '#020E1C',
+    shapeOutline: '#38BDF8',
+    shapeGlow: 'rgba(56, 189, 248, 0.45)',
+    chipGradientStart: '#0EA5E9',
+    chipGradientEnd: '#0A2540',
+    chipText: '#FFFFFF',
+    labelColor: '#0284C7',
+    dayGradStart: '#BAE6FD',
     dayGradMid: '#38BDF8',
-    dayGradEnd: '#F59E0B'
+    dayGradEnd: '#FBBF24'
   },
   {
-    id: 'hyper-electric-sky-gold',
-    name: 'Electric Neon Sky & Champagne Gold',
-    bgCss: 'linear-gradient(135deg, #38BDF8 0%, #0284C7 30%, #4338CA 65%, #F59E0B 100%)',
+    id: 'hyper-electric-sky-navy',
+    name: 'Electric Sky Blue & Midnight Deep Blue',
+    bgCss: 'linear-gradient(135deg, #38BDF8 0%, #0284C7 25%, #0A2540 60%, #020A14 100%)',
     canvasBgStart: '#38BDF8',
     canvasBgMid1: '#0284C7',
-    canvasBgMid2: '#4338CA',
-    canvasBgEnd: '#F59E0B',
+    canvasBgMid2: '#0A2540',
+    canvasBgEnd: '#020A14',
     shapeOutline: '#FDE047',
     shapeGlow: 'rgba(253, 224, 71, 0.5)',
-    chipGradientStart: '#4338CA',
-    chipGradientEnd: '#0284C7',
+    chipGradientStart: '#38BDF8',
+    chipGradientEnd: '#0A2540',
     chipText: '#FEF08A',
-    labelColor: '#4338CA',
+    labelColor: '#0284C7',
     dayGradStart: '#BAE6FD',
     dayGradMid: '#FBBF24',
     dayGradEnd: '#D97706'
@@ -458,75 +458,76 @@ export default function FybFlyerGenerator() {
     setFyb((prev) => ({ ...prev, logo2Url: '' }));
   };
 
-  // High-Definition Canvas 2D Renderer for Pixel-Perfect 800x1000 Pro Graphics
+  // High-Definition Canvas 2D Renderer for Pixel-Perfect 700x900 Pro Graphics
   const renderToCanvas = useCallback(async (format: 'image/jpeg' | 'image/png' = 'image/jpeg', quality = 0.95): Promise<string> => {
     const canvas = canvasRef.current || document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (!ctx) throw new Error('Failed to get 2D canvas context');
 
-    // Canvas resolution: Exactly w800 by h1000 px
-    const width = 800;
-    const height = 1000;
+    // Canvas resolution: Exactly w700 by h900 px (Compact HD Master)
+    const width = 700;
+    const height = 900;
     canvas.width = width;
     canvas.height = height;
 
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
-    // 1. BASE BACKGROUND: Advanced Multi-Stop Sky Blue & Gold Gradient
+    // 1. BASE BACKGROUND: Rich Multi-Stop Sky Blue to Deep Blue Gradient
     const bgGrad = ctx.createLinearGradient(0, 0, width, height);
     bgGrad.addColorStop(0, activeTheme.canvasBgStart);
-    bgGrad.addColorStop(0.26, activeTheme.canvasBgMid1);
+    bgGrad.addColorStop(0.24, activeTheme.canvasBgMid1);
     bgGrad.addColorStop(0.60, activeTheme.canvasBgMid2);
     bgGrad.addColorStop(1, activeTheme.canvasBgEnd);
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, width, height);
 
-    // Decorative Geometric Light Waves & Gold Overlays
+    // Decorative Geometric Light Waves & Sky/Gold Overlays
     ctx.save();
-    // Top right golden ambient glow circle
-    const goldGlow = ctx.createRadialGradient(width - 40, 50, 10, width - 40, 50, 220);
-    goldGlow.addColorStop(0, 'rgba(251, 191, 36, 0.42)');
-    goldGlow.addColorStop(0.5, 'rgba(245, 158, 11, 0.15)');
+    // Top right golden ambient glow
+    const goldGlow = ctx.createRadialGradient(width - 25, 35, 10, width - 25, 35, 170);
+    goldGlow.addColorStop(0, 'rgba(251, 191, 36, 0.38)');
+    goldGlow.addColorStop(0.5, 'rgba(245, 158, 11, 0.12)');
     goldGlow.addColorStop(1, 'rgba(245, 158, 11, 0)');
     ctx.fillStyle = goldGlow;
     ctx.beginPath();
-    ctx.arc(width - 40, 50, 220, 0, Math.PI * 2);
+    ctx.arc(width - 25, 35, 170, 0, Math.PI * 2);
     ctx.fill();
 
-    // Top left sky blue ambient light
-    const skyGlow = ctx.createRadialGradient(70, 70, 10, 70, 70, 200);
-    skyGlow.addColorStop(0, 'rgba(56, 189, 248, 0.38)');
+    // Top left vibrant sky blue ambient glow
+    const skyGlow = ctx.createRadialGradient(40, 40, 10, 40, 40, 180);
+    skyGlow.addColorStop(0, 'rgba(56, 189, 248, 0.45)');
+    skyGlow.addColorStop(0.6, 'rgba(14, 165, 233, 0.15)');
     skyGlow.addColorStop(1, 'rgba(56, 189, 248, 0)');
     ctx.fillStyle = skyGlow;
     ctx.beginPath();
-    ctx.arc(70, 70, 200, 0, Math.PI * 2);
+    ctx.arc(40, 40, 180, 0, Math.PI * 2);
     ctx.fill();
 
     // Subtle modern geometric angled polygon cuts for pro graphic depth
     ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
     ctx.beginPath();
-    ctx.moveTo(0, height * 0.16);
-    ctx.lineTo(width, height * 0.09);
-    ctx.lineTo(width, height * 0.89);
-    ctx.lineTo(0, height * 0.96);
+    ctx.moveTo(0, height * 0.14);
+    ctx.lineTo(width, height * 0.07);
+    ctx.lineTo(width, height * 0.91);
+    ctx.lineTo(0, height * 0.98);
     ctx.closePath();
     ctx.fill();
 
-    // Radiant Gold Outline Shape around Poster Border (Strictly contained inside canvas)
+    // Radiant Outline Shape around Poster Border (Strictly contained inside canvas)
     ctx.strokeStyle = activeTheme.shapeOutline;
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 2;
     ctx.shadowColor = activeTheme.shapeGlow;
-    ctx.shadowBlur = 12;
-    ctx.strokeRect(16, 16, width - 32, height - 32);
+    ctx.shadowBlur = 10;
+    ctx.strokeRect(10, 10, width - 20, height - 20);
     ctx.restore();
 
     // 2. HEADER: Dual Logos + Ministry Titles (Safely inset)
     ctx.save();
-    const marginX = 32;
+    const marginX = 22;
     let textStartX = marginX;
-    const logoY = 25;
-    const logoSize = 40;
+    const logoY = 16;
+    const logoSize = 32;
 
     const hasLogo1 = fyb.showLogos && fyb.logo1Url;
     const hasLogo2 = fyb.showLogos && fyb.logo2Url;
@@ -546,7 +547,7 @@ export default function FybFlyerGenerator() {
           });
           if (img1.width > 0) {
             ctx.drawImage(img1, currentX, logoY, logoSize, logoSize);
-            currentX += logoSize + 8;
+            currentX += logoSize + 6;
           }
         } catch (err) {
           console.warn('Logo 1 render error:', err);
@@ -565,7 +566,7 @@ export default function FybFlyerGenerator() {
           });
           if (img2.width > 0) {
             ctx.drawImage(img2, currentX, logoY, logoSize, logoSize);
-            currentX += logoSize + 8;
+            currentX += logoSize + 6;
           }
         } catch (err) {
           console.warn('Logo 2 render error:', err);
@@ -576,87 +577,104 @@ export default function FybFlyerGenerator() {
     } else {
       // Default Sleek Typographic Badge
       const badgeX = marginX;
-      const badgeY = 25;
-      const badgeW = 40;
-      const badgeH = 40;
+      const badgeY = 16;
+      const badgeW = 32;
+      const badgeH = 32;
       
       const badgeGrad = ctx.createLinearGradient(badgeX, badgeY, badgeX + badgeW, badgeY + badgeH);
       badgeGrad.addColorStop(0, '#F59E0B');
       badgeGrad.addColorStop(1, '#D97706');
       ctx.fillStyle = badgeGrad;
       ctx.beginPath();
-      ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 9);
+      ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 7);
       ctx.fill();
 
       ctx.fillStyle = '#0A2540';
-      ctx.font = '900 13px "Montserrat", sans-serif';
+      ctx.font = '900 10.5px "Montserrat", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText('CAC', badgeX + badgeW / 2, badgeY + badgeH / 2);
-      textStartX = marginX + badgeW + 10;
+      textStartX = marginX + badgeW + 8;
     }
 
     // Ministry Title text
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = '900 13px "Montserrat", sans-serif';
-    ctx.fillText(fyb.ministryName, textStartX, 42);
+    ctx.font = '900 11px "Montserrat", sans-serif';
+    ctx.fillText(fyb.ministryName, textStartX, 30);
 
-    // Chapter Subtitle in Warm Gold
+    // Chapter Subtitle in Warm Gold / Sky Accent
     ctx.fillStyle = '#FDE68A';
-    ctx.font = '800 10px "Montserrat", sans-serif';
-    ctx.fillText(fyb.chapterName, textStartX, 58);
+    ctx.font = '800 8.5px "Montserrat", sans-serif';
+    ctx.fillText(fyb.chapterName, textStartX, 43);
     ctx.restore();
 
-    // 3. MAIN HERO HEADLINE: "FYB OF THE" + "DAY" (PERFECTLY CENTER ALIGNED)
+    // 3. MAIN HERO HEADLINE: INLINE "FYB OF THE DAY" (NOT BLOCK)
     ctx.save();
-    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
     
-    // Top Headline centered
-    ctx.fillStyle = '#38BDF8'; // Sky Blue
-    ctx.font = '900 17px "Montserrat", sans-serif';
-    ctx.fillText(fyb.headline, width / 2, 98);
+    const prefixText = (fyb.headline || 'FYB OF THE').trim();
+    const suffixText = (fyb.subHeadline || 'DAY').trim();
 
-    // Metallic Liquid Gold Gradient "DAY" Centered
-    const dayGrad = ctx.createLinearGradient(width / 2 - 110, 102, width / 2 + 110, 150);
+    const dayGrad = ctx.createLinearGradient(width / 2 - 80, 56, width / 2 + 120, 80);
     dayGrad.addColorStop(0, activeTheme.dayGradStart);
     dayGrad.addColorStop(0.5, activeTheme.dayGradMid);
     dayGrad.addColorStop(1, activeTheme.dayGradEnd);
+
+    const headlineY = 66;
+    ctx.font = '900 19px "Montserrat", sans-serif';
+    const prefixWidth = ctx.measureText(prefixText + ' ').width;
+
+    ctx.font = '900 22px "Impact", "Montserrat", sans-serif';
+    const suffixWidth = ctx.measureText(suffixText).width;
+
+    const totalHeadlineWidth = prefixWidth + suffixWidth;
+    const startHeadlineX = (width - totalHeadlineWidth) / 2;
+
+    // Draw prefix: "FYB OF THE " in Sky Blue
+    ctx.fillStyle = '#38BDF8';
+    ctx.font = '900 19px "Montserrat", sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(prefixText + ' ', startHeadlineX, headlineY);
+
+    // Draw suffix: "DAY" in Metallic Liquid Gold inline
     ctx.fillStyle = dayGrad;
-    ctx.font = '900 48px "Impact", "Montserrat", sans-serif';
-    ctx.fillText(fyb.subHeadline, width / 2, 146);
+    ctx.font = '900 22px "Impact", "Montserrat", sans-serif';
+    ctx.fillText(suffixText, startHeadlineX + prefixWidth, headlineY);
 
     // Symmetrically Centered Accent Divider Line
-    const lineGrad = ctx.createLinearGradient(width / 2 - 180, 156, width / 2 + 180, 156);
+    const lineY = headlineY + 13;
+    const lineGrad = ctx.createLinearGradient(width / 2 - 130, lineY, width / 2 + 130, lineY);
     lineGrad.addColorStop(0, 'transparent');
     lineGrad.addColorStop(0.25, activeTheme.shapeOutline);
     lineGrad.addColorStop(0.5, '#38BDF8');
     lineGrad.addColorStop(0.75, activeTheme.shapeOutline);
     lineGrad.addColorStop(1, 'transparent');
     ctx.strokeStyle = lineGrad;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.moveTo(width / 2 - 180, 156);
-    ctx.lineTo(width / 2 + 180, 156);
+    ctx.moveTo(width / 2 - 130, lineY);
+    ctx.lineTo(width / 2 + 130, lineY);
     ctx.stroke();
     ctx.restore();
 
     // 4. LEFT COLUMN: FYB Photo Frame, Pure Full Name Capsule & "Camp of Celebrity" Badge
+    const startColsY = 94;
     const photoBoxX = marginX;
-    const photoBoxY = 172;
-    const photoBoxW = 270;
-    const photoBoxH = 345;
-    const photoRadius = 18;
+    const photoBoxY = startColsY;
+    const photoBoxW = 230;
+    const photoBoxH = 480;
+    const photoRadius = 14;
 
     // Glowing Outer Border matching Theme Shape Outline
     ctx.save();
     ctx.shadowColor = activeTheme.shapeGlow;
-    ctx.shadowBlur = 12;
+    ctx.shadowBlur = 10;
     ctx.strokeStyle = activeTheme.shapeOutline;
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 2.5;
     ctx.beginPath();
-    ctx.roundRect(photoBoxX - 2, photoBoxY - 2, photoBoxW + 4, photoBoxH + 4, photoRadius + 2);
+    ctx.roundRect(photoBoxX - 1.5, photoBoxY - 1.5, photoBoxW + 3, photoBoxH + 3, photoRadius + 1.5);
     ctx.stroke();
     ctx.restore();
 
@@ -699,8 +717,8 @@ export default function FybFlyerGenerator() {
     ctx.restore();
 
     // Pure Full Name Capsule Banner under Photo (Religious titles removed, dynamic font scaling)
-    const namePillY = photoBoxY + photoBoxH + 10;
-    const namePillH = 38;
+    const namePillY = photoBoxY + photoBoxH + 8;
+    const namePillH = 34;
     const nameGrad = ctx.createLinearGradient(photoBoxX, namePillY, photoBoxX + photoBoxW, namePillY + namePillH);
     nameGrad.addColorStop(0, '#F59E0B');
     nameGrad.addColorStop(0.5, '#FBBF24');
@@ -709,17 +727,17 @@ export default function FybFlyerGenerator() {
     ctx.save();
     ctx.fillStyle = nameGrad;
     ctx.shadowColor = 'rgba(0, 0, 0, 0.25)';
-    ctx.shadowBlur = 6;
+    ctx.shadowBlur = 5;
     ctx.shadowOffsetY = 2;
     ctx.beginPath();
-    ctx.roundRect(photoBoxX, namePillY, photoBoxW, namePillH, 19);
+    ctx.roundRect(photoBoxX, namePillY, photoBoxW, namePillH, 17);
     ctx.fill();
 
     const cleanRealName = formatCleanFullName(fyb.name);
     // Dynamic font sizing for name banner so it never overflows
-    let nameFontSize = 12.5;
-    if (cleanRealName.length > 28) nameFontSize = 9.5;
-    else if (cleanRealName.length > 20) nameFontSize = 11;
+    let nameFontSize = 11;
+    if (cleanRealName.length > 28) nameFontSize = 8.5;
+    else if (cleanRealName.length > 20) nameFontSize = 9.5;
 
     ctx.fillStyle = '#0A2540';
     ctx.font = `900 ${nameFontSize}px "Montserrat", sans-serif`;
@@ -727,7 +745,7 @@ export default function FybFlyerGenerator() {
     ctx.textBaseline = 'middle';
 
     let displayRealName = cleanRealName;
-    const maxNameWidth = photoBoxW - 16;
+    const maxNameWidth = photoBoxW - 14;
     if (ctx.measureText(displayRealName).width > maxNameWidth) {
       while (displayRealName.length > 3 && ctx.measureText(displayRealName + '...').width > maxNameWidth) {
         displayRealName = displayRealName.substring(0, displayRealName.length - 1);
@@ -738,37 +756,37 @@ export default function FybFlyerGenerator() {
     ctx.restore();
 
     // Left Column Secondary Highlight Card: "CAMP OF CELEBRITY"
-    const celebrityBoxY = namePillY + namePillH + 10;
-    const celebrityBoxH = 88;
+    const celebrityBoxY = namePillY + namePillH + 8;
+    const celebrityBoxH = 84;
     ctx.save();
     ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
     ctx.strokeStyle = activeTheme.shapeOutline;
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 1.3;
     ctx.beginPath();
-    ctx.roundRect(photoBoxX, celebrityBoxY, photoBoxW, celebrityBoxH, 14);
+    ctx.roundRect(photoBoxX, celebrityBoxY, photoBoxW, celebrityBoxH, 12);
     ctx.fill();
     ctx.stroke();
 
     ctx.fillStyle = '#FDE68A';
-    ctx.font = '900 10px "Montserrat", sans-serif';
+    ctx.font = '900 8.5px "Montserrat", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('FINAL YEAR BRETHREN', photoBoxX + photoBoxW / 2, celebrityBoxY + 24);
+    ctx.fillText('FINAL YEAR BRETHREN', photoBoxX + photoBoxW / 2, celebrityBoxY + 22);
 
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = '900 13px "Montserrat", sans-serif';
-    ctx.fillText('CAMP OF CELEBRITY', photoBoxX + photoBoxW / 2, celebrityBoxY + 46);
+    ctx.font = '900 11.5px "Montserrat", sans-serif';
+    ctx.fillText('CAMP OF CELEBRITY', photoBoxX + photoBoxW / 2, celebrityBoxY + 42);
 
     ctx.fillStyle = activeTheme.shapeOutline;
-    ctx.font = '12px sans-serif';
-    ctx.fillText('✦ ✦ ✦', photoBoxX + photoBoxW / 2, celebrityBoxY + 68);
+    ctx.font = '10px sans-serif';
+    ctx.fillText('✦ ✦ ✦', photoBoxX + photoBoxW / 2, celebrityBoxY + 62);
     ctx.restore();
 
-    // 5. RIGHT COLUMN: 9 Content-Adaptive Questionnaire Cards (Exact 800x1000 proportion)
-    const rightColX = 320;
-    const rightColW = width - rightColX - marginX; // 448px wide
-    const rightStartY = 172;
-    const cardHeight = 74;
-    const cardGap = 8;
+    // 5. RIGHT COLUMN: 9 Compact, Content-Adaptive Questionnaire Cards (Exact 700x900 proportion)
+    const rightColX = 266;
+    const rightColW = width - rightColX - marginX; // 412px wide
+    const rightStartY = startColsY;
+    const cardHeight = 67;
+    const cardGap = 6;
 
     customFields.forEach((field, index) => {
       const itemY = rightStartY + index * (cardHeight + cardGap);
@@ -776,25 +794,25 @@ export default function FybFlyerGenerator() {
 
       ctx.save();
       // Outer Card Container: Crisp White with subtle shadow
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
-      ctx.shadowBlur = 5;
-      ctx.shadowOffsetY = 2;
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.12)';
+      ctx.shadowBlur = 4;
+      ctx.shadowOffsetY = 1.5;
 
       ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
-      ctx.roundRect(rightColX, itemY, cardW, cardHeight, 10);
+      ctx.roundRect(rightColX, itemY, cardW, cardHeight, 9);
       ctx.fill();
 
       // Border outline matching the active theme
       ctx.shadowColor = 'transparent';
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = 1.2;
       ctx.strokeStyle = activeTheme.shapeOutline;
       ctx.stroke();
 
-      // Left Number Chip with Theme Gradient
-      const numChipW = 26;
+      // Left Number Chip with Theme Gradient (Compact & Elegant)
+      const numChipW = 22;
       const numChipH = cardHeight - 12;
-      const chipX = rightColX + 6;
+      const chipX = rightColX + 5;
       const chipY = itemY + 6;
 
       const numGrad = ctx.createLinearGradient(chipX, chipY, chipX + numChipW, chipY + numChipH);
@@ -802,41 +820,40 @@ export default function FybFlyerGenerator() {
       numGrad.addColorStop(1, activeTheme.chipGradientEnd);
       ctx.fillStyle = numGrad;
       ctx.beginPath();
-      ctx.roundRect(chipX, chipY, numChipW, numChipH, 7);
+      ctx.roundRect(chipX, chipY, numChipW, numChipH, 6);
       ctx.fill();
 
       // Number Digit Text
       ctx.fillStyle = activeTheme.chipText;
-      ctx.font = '900 11.5px "Montserrat", sans-serif';
+      ctx.font = '900 10.5px "Montserrat", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(String(index + 1), chipX + numChipW / 2, chipY + numChipH / 2);
 
       // Content inside the card
-      const textX = chipX + numChipW + 10;
+      const textX = chipX + numChipW + 8;
       const label = field.label;
       const rawValue = (fyb[field.key] as string) || '';
       const displayRaw = rawValue.trim() ? rawValue : 'N/A';
 
-      // 1. Question Prompt Label
+      // 1. Question Prompt Label (Compact & Clean)
       ctx.textAlign = 'left';
       ctx.textBaseline = 'alphabetic';
       ctx.fillStyle = activeTheme.labelColor;
-      ctx.font = '900 9px "Montserrat", sans-serif';
-      ctx.fillText(label, textX, itemY + 18);
+      ctx.font = '900 8px "Montserrat", sans-serif';
+      ctx.fillText(label, textX, itemY + 16);
 
       // 2. DYNAMIC CONTENT-AWARE VALUE SIZING & WRAPPING
-      // Short contents look bold and filled with right crisp size;
-      // Longer contents are scaled down and line-wrapped cleanly to never overflow width or height.
-      const maxTextW = cardW - numChipW - 24; // ~398px
+      // Compact text rendering with zero oversized padding
+      const maxTextW = cardW - numChipW - 20; // ~370px
       const valLength = displayRaw.length;
 
       ctx.fillStyle = '#0F172A';
 
       if (valLength <= 24) {
         // Short Content: Bold, crisp single-line display
-        let fontSize = 12.5;
-        if (valLength > 16) fontSize = 11.5;
+        let fontSize = 11;
+        if (valLength > 16) fontSize = 10;
         ctx.font = `800 ${fontSize}px "Montserrat", "Segoe UI", sans-serif`;
         
         let displayVal = displayRaw;
@@ -846,10 +863,10 @@ export default function FybFlyerGenerator() {
           }
           displayVal += '...';
         }
-        ctx.fillText(displayVal, textX, itemY + 44);
+        ctx.fillText(displayVal, textX, itemY + 40);
       } else if (valLength <= 55) {
-        // Medium Content: 10px font with 2-line smart wrap or single line
-        ctx.font = '700 10px "Montserrat", "Segoe UI", sans-serif';
+        // Medium Content: 9px font with 2-line smart wrap
+        ctx.font = '700 9px "Montserrat", "Segoe UI", sans-serif';
         const words = displayRaw.split(' ');
         let line1 = '';
         let line2 = '';
@@ -863,21 +880,20 @@ export default function FybFlyerGenerator() {
         }
 
         if (line2) {
-          // If line2 overflows, truncate
           if (ctx.measureText(line2).width > maxTextW) {
             while (line2.length > 3 && ctx.measureText(line2 + '...').width > maxTextW) {
               line2 = line2.substring(0, line2.length - 1);
             }
             line2 += '...';
           }
-          ctx.fillText(line1, textX, itemY + 36);
-          ctx.fillText(line2, textX, itemY + 54);
+          ctx.fillText(line1, textX, itemY + 33);
+          ctx.fillText(line2, textX, itemY + 48);
         } else {
-          ctx.fillText(line1, textX, itemY + 44);
+          ctx.fillText(line1, textX, itemY + 40);
         }
       } else {
-        // Long Content: Scaled down 8.5px with up to 3 lines wrapped gracefully
-        ctx.font = '600 8.5px "Montserrat", "Segoe UI", sans-serif';
+        // Long Content: Scaled down 7.8px with up to 3 lines wrapped gracefully
+        ctx.font = '600 7.8px "Montserrat", "Segoe UI", sans-serif';
         const words = displayRaw.split(' ');
         const lines: string[] = [''];
         let currentLineIdx = 0;
@@ -890,12 +906,10 @@ export default function FybFlyerGenerator() {
             currentLineIdx++;
             lines[currentLineIdx] = w;
           } else {
-            // Reached max line 3, append and truncate
             lines[2] += ' ' + w;
           }
         }
 
-        // Truncate line 3 if overflowing
         if (lines[2] && ctx.measureText(lines[2]).width > maxTextW) {
           while (lines[2].length > 3 && ctx.measureText(lines[2] + '...').width > maxTextW) {
             lines[2] = lines[2].substring(0, lines[2].length - 1);
@@ -904,14 +918,14 @@ export default function FybFlyerGenerator() {
         }
 
         if (lines.length === 1) {
-          ctx.fillText(lines[0], textX, itemY + 42);
+          ctx.fillText(lines[0], textX, itemY + 38);
         } else if (lines.length === 2) {
-          ctx.fillText(lines[0], textX, itemY + 36);
-          ctx.fillText(lines[1], textX, itemY + 52);
+          ctx.fillText(lines[0], textX, itemY + 33);
+          ctx.fillText(lines[1], textX, itemY + 47);
         } else {
-          ctx.fillText(lines[0], textX, itemY + 32);
-          ctx.fillText(lines[1], textX, itemY + 45);
-          ctx.fillText(lines[2], textX, itemY + 58);
+          ctx.fillText(lines[0], textX, itemY + 29);
+          ctx.fillText(lines[1], textX, itemY + 41);
+          ctx.fillText(lines[2], textX, itemY + 53);
         }
       }
 
@@ -920,20 +934,20 @@ export default function FybFlyerGenerator() {
 
     // 6. FOOTER BAR: Ribbon with Motto (Safely contained inside poster boundaries)
     ctx.save();
-    const footerH = 34;
-    const footerY = height - footerH - 24;
+    const footerH = 28;
+    const footerY = height - footerH - 16;
     
     ctx.fillStyle = '#0A2540';
     ctx.beginPath();
-    ctx.roundRect(marginX, footerY, width - (marginX * 2), footerH, 9);
+    ctx.roundRect(marginX, footerY, width - (marginX * 2), footerH, 7);
     ctx.fill();
 
     ctx.strokeStyle = activeTheme.shapeOutline;
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 1.3;
     ctx.stroke();
 
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = '900 9.5px "Montserrat", sans-serif';
+    ctx.font = '900 8.5px "Montserrat", sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(fyb.footerMotto, width / 2, footerY + footerH / 2);
@@ -951,7 +965,7 @@ export default function FybFlyerGenerator() {
 
       const cleanName = formatCleanFullName(fyb.name);
       const link = document.createElement('a');
-      const filename = `CACYOF_FYB_${cleanName.replace(/[^a-zA-Z0-9]/g, '_')}_800x1000.${format}`;
+      const filename = `CACYOF_FYB_${cleanName.replace(/[^a-zA-Z0-9]/g, '_')}_700x900.${format}`;
       link.download = filename;
       link.href = dataUrl;
       link.click();
@@ -1027,13 +1041,13 @@ export default function FybFlyerGenerator() {
         <div>
           <div className="inline-flex items-center space-x-2 bg-sky-500/10 text-sky-700 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-2 border border-sky-200">
             <Crown size={15} className="text-amber-500" />
-            <span>Pro Graphic Studio • 800 × 1000 HD Master</span>
+            <span>Pro Graphic Studio • 700 × 900 HD Master</span>
           </div>
           <h1 className="text-3xl md:text-4xl font-extrabold text-[#0A2540] font-serif tracking-tight">
             FYB of the Day Flyer Studio
           </h1>
           <p className="text-gray-500 text-sm font-light mt-1">
-            Generate ultra-sharp w800 by h1000 social media flyers with content-adaptive typography, vibrant gradients, and permanent dual branding.
+            Generate compact, ultra-sharp w700 by h900 social media posters in deep blue and sky blue with content-adaptive sleek cards and dual branding.
           </p>
         </div>
 
@@ -1045,7 +1059,7 @@ export default function FybFlyerGenerator() {
             className="flex items-center space-x-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-5 py-3 rounded-xl font-bold text-xs uppercase tracking-wider shadow-lg shadow-amber-500/20 transition-all disabled:opacity-50 cursor-pointer"
           >
             <Download size={16} />
-            <span>{generating ? 'Exporting...' : 'Download JPG (800x1000)'}</span>
+            <span>{generating ? 'Exporting...' : 'Download JPG (700×900)'}</span>
           </button>
           <button
             onClick={() => handleDownload('png')}
@@ -1613,89 +1627,91 @@ export default function FybFlyerGenerator() {
           </div>
         </div>
 
-        {/* Right Live Preview (Exact 800x1000 Pro Graphics Ratio: 4:5) */}
+        {/* Right Live Preview (Exact 700x900 Pro Graphics Ratio) */}
         <div className="xl:col-span-7 flex flex-col items-center">
           <div className="w-full flex justify-between items-center mb-3 px-2">
             <span className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center space-x-1.5">
               <Eye size={14} />
-              <span>Live Graphic Canvas • 800 × 1000 px (4:5 Poster)</span>
+              <span>Live Graphic Canvas • 700 × 900 px (Compact Master)</span>
             </span>
             <span className="text-[10px] bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-0.5 rounded font-black uppercase tracking-wider">
               {activeTheme.name.split('(')[0]}
             </span>
           </div>
 
-          {/* Scalable Container matching the 800x1000 aspect ratio (4:5) */}
-          <div className="w-full max-w-[490px] aspect-[4/5] rounded-[2rem] shadow-2xl border-4 border-white overflow-hidden relative select-none">
+          {/* Scalable Container matching the 700x900 aspect ratio */}
+          <div className="w-full max-w-[430px] aspect-[700/900] rounded-[1.75rem] shadow-2xl border-4 border-white overflow-hidden relative select-none">
             <div
-              className="w-full h-full relative p-3.5 flex flex-col justify-between overflow-hidden box-border"
+              className="w-full h-full relative p-3 flex flex-col justify-between overflow-hidden box-border"
               style={{
                 background: activeTheme.bgCss,
                 fontFamily: 'Montserrat, system-ui, -apple-system, sans-serif'
               }}
             >
               {/* Background ambient lighting glows */}
-              <div className="absolute top-0 right-0 w-44 h-44 rounded-full bg-amber-400/20 blur-3xl pointer-events-none" />
-              <div className="absolute top-0 left-0 w-36 h-36 rounded-full bg-sky-400/25 blur-2xl pointer-events-none" />
+              <div className="absolute top-0 right-0 w-36 h-36 rounded-full bg-amber-400/20 blur-3xl pointer-events-none" />
+              <div className="absolute top-0 left-0 w-32 h-32 rounded-full bg-sky-400/25 blur-2xl pointer-events-none" />
               
               {/* Inner Outline Frame strictly contained within poster */}
               <div 
-                className="absolute inset-2 rounded-[1.5rem] pointer-events-none transition-colors"
+                className="absolute inset-1.5 rounded-[1.35rem] pointer-events-none transition-colors"
                 style={{
-                  border: `2px solid ${activeTheme.shapeOutline}`,
-                  boxShadow: `0 0 12px ${activeTheme.shapeGlow}`
+                  border: `1.5px solid ${activeTheme.shapeOutline}`,
+                  boxShadow: `0 0 10px ${activeTheme.shapeGlow}`
                 }}
               />
 
               {/* 1. Header Row: Dual Logos & Ministry Name */}
-              <div className="relative z-10 flex items-center space-x-2 pt-0.5 px-1">
+              <div className="relative z-10 flex items-center space-x-2 pt-0.5 px-0.5">
                 {(fyb.logo1Url || fyb.logo2Url) ? (
-                  <div className="flex items-center space-x-1.5 shrink-0">
+                  <div className="flex items-center space-x-1 shrink-0">
                     {fyb.logo1Url && (
                       <img
                         src={fyb.logo1Url}
                         alt="CAC Logo"
-                        className="w-7 h-7 object-contain drop-shadow-md rounded-lg"
+                        className="w-6 h-6 object-contain drop-shadow-md rounded-md"
                       />
                     )}
                     {fyb.logo2Url && (
                       <img
                         src={fyb.logo2Url}
                         alt="Poly Logo"
-                        className="w-7 h-7 object-contain drop-shadow-md rounded-lg"
+                        className="w-6 h-6 object-contain drop-shadow-md rounded-md"
                       />
                     )}
                   </div>
                 ) : (
-                  <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-[#0A2540] font-black text-[9px] shadow-sm shrink-0">
+                  <div className="w-5 h-5 rounded-md bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-[#0A2540] font-black text-[8px] shadow-sm shrink-0">
                     CAC
                   </div>
                 )}
-                <div>
-                  <h3 className="text-[10px] font-black text-white tracking-wide leading-tight uppercase truncate">
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-[9px] font-black text-white tracking-wide leading-tight uppercase truncate">
                     {fyb.ministryName}
                   </h3>
-                  <p className="text-[8px] font-black text-amber-200 tracking-wider uppercase truncate">
+                  <p className="text-[7.5px] font-black text-amber-200 tracking-wider uppercase truncate">
                     {fyb.chapterName}
                   </p>
                 </div>
               </div>
 
-              {/* 2. Main Title Row: "FYB OF THE" + "DAY" (WELL ALIGNED AT CENTER) */}
-              <div className="relative z-10 px-1 mt-0 text-center flex flex-col items-center justify-center">
-                <div className="text-[12px] font-black text-sky-300 tracking-wider leading-none uppercase drop-shadow-sm font-sans">
-                  {fyb.headline}
+              {/* 2. Main Title Row: INLINE "FYB OF THE DAY" (NOT BLOCK) */}
+              <div className="relative z-10 px-1 text-center flex flex-col items-center justify-center my-0.5">
+                <div className="flex items-baseline justify-center space-x-1.5 leading-none">
+                  <span className="text-[13px] font-black text-sky-300 tracking-wider uppercase drop-shadow-sm font-sans">
+                    {fyb.headline}
+                  </span>
+                  <span 
+                    className="text-[15px] font-black tracking-tight uppercase bg-clip-text text-transparent drop-shadow-md"
+                    style={{
+                      backgroundImage: `linear-gradient(90deg, ${activeTheme.dayGradStart}, ${activeTheme.dayGradMid}, ${activeTheme.dayGradEnd})`
+                    }}
+                  >
+                    {fyb.subHeadline}
+                  </span>
                 </div>
                 <div 
-                  className="text-[34px] font-black tracking-tighter leading-none uppercase bg-clip-text text-transparent drop-shadow-md my-0.5"
-                  style={{
-                    backgroundImage: `linear-gradient(90deg, ${activeTheme.dayGradStart}, ${activeTheme.dayGradMid}, ${activeTheme.dayGradEnd})`
-                  }}
-                >
-                  {fyb.subHeadline}
-                </div>
-                <div 
-                  className="h-0.5 w-40 rounded-full opacity-85"
+                  className="h-0.5 w-32 rounded-full opacity-85 mt-0.5"
                   style={{
                     background: `linear-gradient(90deg, transparent, ${activeTheme.shapeOutline}, #38BDF8, ${activeTheme.shapeOutline}, transparent)`
                   }}
@@ -1703,15 +1719,15 @@ export default function FybFlyerGenerator() {
               </div>
 
               {/* 3. Center Split: Left Frame & Right 9 Questionnaire Cards */}
-              <div className="relative z-10 grid grid-cols-12 gap-2 my-auto items-stretch px-1">
+              <div className="relative z-10 grid grid-cols-12 gap-1.5 my-auto items-stretch px-0.5">
                 {/* Left Side: Photo Frame + Secular Full Name Banner + Camp of Celebrity (5 cols) */}
                 <div className="col-span-5 flex flex-col justify-between">
                   {/* Photo Container with Custom Shape Outline */}
                   <div
-                    className="w-full aspect-[3/4] rounded-[1rem] relative overflow-hidden shadow-xl"
+                    className="w-full aspect-[230/280] rounded-[0.85rem] relative overflow-hidden shadow-xl"
                     style={{
-                      border: `2px solid ${activeTheme.shapeOutline}`,
-                      boxShadow: `0 0 10px ${activeTheme.shapeGlow}`,
+                      border: `1.5px solid ${activeTheme.shapeOutline}`,
+                      boxShadow: `0 0 8px ${activeTheme.shapeGlow}`,
                       backgroundColor: '#0A2540'
                     }}
                   >
@@ -1729,16 +1745,16 @@ export default function FybFlyerGenerator() {
                       />
                     ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center text-white/50">
-                        <Camera size={24} />
-                        <span className="text-[8px] mt-1">No photo</span>
+                        <Camera size={20} />
+                        <span className="text-[7.5px] mt-0.5">No photo</span>
                       </div>
                     )}
                   </div>
 
                   {/* Pure Secular Full Name Pill under photo with dynamic text size */}
-                  <div className="w-full mt-1 py-1 px-1.5 rounded-lg text-center shadow bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 border border-amber-200">
+                  <div className="w-full mt-1 py-0.5 px-1 rounded-md text-center shadow bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 border border-amber-200">
                     <span className={`font-black text-[#0A2540] uppercase tracking-wider block truncate ${
-                      fyb.name.length > 24 ? 'text-[8px]' : 'text-[9px]'
+                      fyb.name.length > 24 ? 'text-[7.5px]' : 'text-[8.5px]'
                     }`}>
                       {formatCleanFullName(fyb.name)}
                     </span>
@@ -1746,45 +1762,44 @@ export default function FybFlyerGenerator() {
 
                   {/* Camp of Celebrity Badge */}
                   <div 
-                    className="mt-1 p-1.5 rounded-lg bg-white/10 backdrop-blur-md text-center"
+                    className="mt-1 p-1 rounded-md bg-white/10 backdrop-blur-md text-center"
                     style={{
-                      border: `1.2px solid ${activeTheme.shapeOutline}`
+                      border: `1px solid ${activeTheme.shapeOutline}`
                     }}
                   >
-                    <p className="text-[7px] font-black text-amber-200 uppercase tracking-widest">FINAL YEAR BRETHREN</p>
-                    <p className="text-[8.5px] font-black text-white uppercase mt-0.5 tracking-wider">CAMP OF CELEBRITY</p>
-                    <p className="text-[7.5px] mt-0.5 opacity-80" style={{ color: activeTheme.shapeOutline }}>✦ ✦ ✦</p>
+                    <p className="text-[6.5px] font-black text-amber-200 uppercase tracking-widest">FINAL YEAR BRETHREN</p>
+                    <p className="text-[7.5px] font-black text-white uppercase mt-0.5 tracking-wider">CAMP OF CELEBRITY</p>
+                    <p className="text-[6.5px] mt-0.5 opacity-80" style={{ color: activeTheme.shapeOutline }}>✦ ✦ ✦</p>
                   </div>
                 </div>
 
-                {/* Right Side: 9 Content-Adaptive Questionnaire Cards (7 cols) */}
-                <div className="col-span-7 space-y-1">
+                {/* Right Side: 9 Compact, Content-Adaptive Questionnaire Cards (7 cols) */}
+                <div className="col-span-7 space-y-0.5 flex flex-col justify-between">
                   {customFields.map((field, idx) => {
                     const rawVal = String(fyb[field.key] || '').trim();
                     const valDisplay = rawVal || 'N/A';
                     const valLen = valDisplay.length;
 
                     // Content-Aware Typography:
-                    // Short content is bold, punchy, and appropriately filled
-                    // Long content scales down seamlessly with line clamping to fit gracefully
-                    let valClass = 'text-[8.5px] font-black leading-tight text-slate-900';
+                    // Sleek, compact height with no oversized padding
+                    let valClass = 'text-[7.5px] font-black leading-tight text-slate-900';
                     if (valLen > 55) {
-                      valClass = 'text-[6.5px] font-semibold leading-[1.1] text-slate-900 line-clamp-2';
+                      valClass = 'text-[6px] font-semibold leading-[1.1] text-slate-900 line-clamp-2';
                     } else if (valLen > 24) {
-                      valClass = 'text-[7.2px] font-bold leading-[1.15] text-slate-900 line-clamp-2';
+                      valClass = 'text-[6.8px] font-bold leading-[1.15] text-slate-900 line-clamp-2';
                     }
 
                     return (
                       <div
                         key={field.id}
-                        className="bg-white/95 backdrop-blur-md shadow-sm rounded-md px-1.5 py-1 flex items-center space-x-1.5 transition-all min-h-[29px]"
+                        className="bg-white/95 backdrop-blur-md shadow-sm rounded-md px-1.5 py-0.5 flex items-center space-x-1.5 transition-all min-h-[25px]"
                         style={{
-                          border: `1.2px solid ${activeTheme.shapeOutline}`
+                          border: `1px solid ${activeTheme.shapeOutline}`
                         }}
                       >
                         {/* Left Number Chip */}
                         <div
-                          className="w-4 h-4 rounded shrink-0 flex items-center justify-center text-[7.5px] font-black shadow-sm"
+                          className="w-3.5 h-3.5 rounded shrink-0 flex items-center justify-center text-[7px] font-black shadow-sm"
                           style={{
                             background: `linear-gradient(135deg, ${activeTheme.chipGradientStart}, ${activeTheme.chipGradientEnd})`,
                             color: activeTheme.chipText
@@ -1796,7 +1811,7 @@ export default function FybFlyerGenerator() {
                         {/* Content: Label & Value */}
                         <div className="flex-1 min-w-0 pr-0.5">
                           <div
-                            className="text-[6.5px] font-black uppercase tracking-wider leading-none truncate"
+                            className="text-[6px] font-black uppercase tracking-wider leading-none truncate"
                             style={{ color: activeTheme.labelColor }}
                           >
                             {field.label}
@@ -1813,19 +1828,19 @@ export default function FybFlyerGenerator() {
 
               {/* 4. Bottom Footer Strip (Neatly nested inside boundaries) */}
               <div 
-                className="relative z-10 w-full py-1 px-2.5 rounded-md text-center bg-[#0A2540] mx-auto shadow-sm"
+                className="relative z-10 w-full py-1 px-2 rounded-md text-center bg-[#0A2540] mx-auto shadow-sm"
                 style={{
-                  border: `1.2px solid ${activeTheme.shapeOutline}`
+                  border: `1px solid ${activeTheme.shapeOutline}`
                 }}
               >
-                <p className="text-[7px] font-black text-white uppercase tracking-widest truncate">
+                <p className="text-[6.5px] font-black text-white uppercase tracking-widest truncate">
                   {fyb.footerMotto}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Invisible canvas for high-definition 800x1000 export */}
+          {/* Invisible canvas for high-definition 700x900 export */}
           <canvas ref={canvasRef} className="hidden" />
 
           {/* Export helper toolbar */}
@@ -1836,7 +1851,7 @@ export default function FybFlyerGenerator() {
               className="flex items-center space-x-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
             >
               <Download size={16} />
-              <span>Export HD JPG (800×1000)</span>
+              <span>Export HD JPG (700×900)</span>
             </button>
             <button
               onClick={handleSaveFlyer}

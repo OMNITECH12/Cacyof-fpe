@@ -10,7 +10,8 @@ import {
   LayoutDashboard,
   X,
   Video,
-  Sparkles
+  Sparkles,
+  CheckCircle2
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
@@ -36,6 +37,7 @@ export default function Sidebar({ role, isOpen, onClose }: SidebarProps) {
 
   const adminLinks = [
     { name: 'Membership', path: '/dashboard/admin', icon: Users },
+    { name: 'Update Tracker', path: '/dashboard/admin/tracking', icon: CheckCircle2 },
     { name: 'FYB Flyer Studio', path: '/dashboard/admin/fyb-flyer', icon: Sparkles },
     { name: 'Blog Studio', path: '/dashboard/admin/blog', icon: FileText },
     { name: 'Broadcast', path: '/dashboard/admin/broadcast', icon: Send },
