@@ -324,14 +324,30 @@ export default function FybFlyerGenerator() {
     }
   };
 
-  const handleMemberSelect = (memberId: string, memberList = members) => {
+  const handleMemberSelect = async (memberId: string, memberList = members) => {
     setSelectedMemberId(memberId);
     if (!memberId) return;
 
-    const m = memberList.find((item: any) => item.id === memberId);
+    let m = memberList.find((item: any) => item.id === memberId);
+
+    // Fetch the freshest record directly from Supabase to guarantee real-time hobbies and questionnaire accuracy
+    try {
+      const { data: freshMember, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', memberId)
+        .single();
+      if (freshMember && !error) {
+        m = freshMember;
+        setMembers((prev) => prev.map((item) => item.id === memberId ? freshMember : item));
+      }
+    } catch (err) {
+      console.warn('Could not fetch fresh member profile:', err);
+    }
+
     if (m) {
       const cleanedFullName = formatCleanFullName(m.full_name || '');
-      const nicknameVal = (m.nickname || m.alias || m.preferred_name || 'N/A').toUpperCase();
+      const nicknameVal = (m.nickname || m.alias || m.preferred_name || '').trim().toUpperCase() || 'N/A';
 
       const unitVal = m.church_position 
         ? `${m.academic_level || ''} (${m.church_position})`.trim()
@@ -339,37 +355,62 @@ export default function FybFlyerGenerator() {
 
       const dobVal = m.date_of_birth 
         ? new Date(m.date_of_birth).toLocaleDateString('en-GB', { day: 'numeric', month: 'numeric' })
-        : (m.dob ? m.dob.toUpperCase() : '23/12');
+        : (m.dob ? m.dob.trim().toUpperCase() : 'N/A');
+
+      // Comprehensive hobbies extraction from all possible database column variations
+      const rawHobbies = m.hobbies || m.hobby || m.hobbies_interests || m.interests || m.hobby_interests || m.favorite_hobbies || m.hobbies_and_interests || '';
+      const hobbiesVal = rawHobbies ? String(rawHobbies).trim().toUpperCase() : '';
+
+      const mentorVal = (m.mentor_name || m.mentor || m.your_mentor || '').trim().toUpperCase();
+      const careerVal = (m.career_path || m.career || m.your_career || '').trim().toUpperCase();
+      const rawQuote = m.favorite_quote || m.quote || '';
+      const quoteVal = rawQuote ? `“${String(rawQuote).replace(/[“”"]/g, '').trim()}”`.toUpperCase() : '';
+      const songVal = (m.favorite_song || m.song || '').trim().toUpperCase();
+      const foodVal = (m.favorite_food || m.food || '').trim().toUpperCase();
+      const stateVal = (m.state_of_origin || m.state || '').trim().toUpperCase();
+      const deptVal = (m.department || '').trim().toUpperCase();
+      const levelVal = (m.academic_level || m.level || '').trim().toUpperCase();
+      const phoneVal = m.phone_number || m.phone || '';
+      const emailVal = m.email || '';
+      const facebookVal = m.facebook_name || m.facebook || '';
+      const viewCacyofVal = m.view_and_desire_about_cacyof || m.view_and_desire || '';
+      const entrepreneurVal = (m.entrepreneurship_path || m.entrepreneur_path || '').trim().toUpperCase();
+      const desireGodVal = m.utmost_desire_from_god || m.desire_from_god || '';
+      const viewLifeVal = m.view_about_life || m.view_life || '';
+      const adviceVal = m.word_of_advice || m.advice || '';
+      const inspirationVal = m.source_of_inspiration || m.inspiration || '';
+      const maritalVal = (m.marital_status || 'Single').trim().toUpperCase();
+      const courseVal = deptVal ? `${deptVal} ${levelVal ? `(${levelVal})` : ''}`.trim() : '';
 
       setFyb((prev) => ({
         ...prev,
         name: cleanedFullName || prev.name,
-        department: (m.department || prev.department).toUpperCase(),
-        level: (m.academic_level || prev.level).toUpperCase(),
-        unitInFellowship: unitVal.toUpperCase(),
+        department: deptVal || '',
+        level: levelVal || '',
+        unitInFellowship: unitVal || 'MEMBER',
         dob: dobVal,
         nickname: nicknameVal,
-        stateOfOrigin: (m.state_of_origin || prev.stateOfOrigin).toUpperCase(),
-        homeAddress: m.contact_address || m.home_address || prev.homeAddress,
-        phone: m.phone_number || prev.phone,
-        email: m.email || prev.email,
-        facebookName: m.facebook_name || prev.facebookName,
-        viewAndDesireAboutCacyof: m.view_and_desire_about_cacyof || prev.viewAndDesireAboutCacyof,
-        mentor: m.mentor_name ? m.mentor_name.toUpperCase() : prev.mentor,
-        entrepreneurPath: (m.entrepreneurship_path || prev.entrepreneurPath).toUpperCase(),
-        career: (m.career_path || prev.career).toUpperCase(),
-        utmostDesireFromGod: m.utmost_desire_from_god || prev.utmostDesireFromGod,
-        hobbies: m.hobbies ? m.hobbies.toUpperCase() : prev.hobbies,
-        quote: m.favorite_quote ? `“${m.favorite_quote.replace(/[“”"]/g, '')}”`.toUpperCase() : prev.quote,
-        favoriteSong: (m.favorite_song || prev.favoriteSong).toUpperCase(),
-        favoriteFood: (m.favorite_food || prev.favoriteFood).toUpperCase(),
-        viewAboutLife: m.view_about_life || prev.viewAboutLife,
-        wordOfAdvice: m.word_of_advice || prev.wordOfAdvice,
-        sourceOfInspiration: m.source_of_inspiration || prev.sourceOfInspiration,
-        maritalStatus: (m.marital_status || 'Single').toUpperCase(),
-        favoriteCourse: m.department ? `${m.department} ${m.academic_level ? `(${m.academic_level})` : ''}`.trim().toUpperCase() : prev.favoriteCourse,
-        asideCourse: (m.career_path || prev.asideCourse).toUpperCase(),
-        photoUrl: m.avatar_url || prev.photoUrl,
+        stateOfOrigin: stateVal || '',
+        homeAddress: m.contact_address || m.home_address || '',
+        phone: phoneVal,
+        email: emailVal,
+        facebookName: facebookVal,
+        viewAndDesireAboutCacyof: viewCacyofVal,
+        mentor: mentorVal || '',
+        entrepreneurPath: entrepreneurVal || '',
+        career: careerVal || '',
+        utmostDesireFromGod: desireGodVal,
+        hobbies: hobbiesVal,
+        quote: quoteVal,
+        favoriteSong: songVal || '',
+        favoriteFood: foodVal || '',
+        viewAboutLife: viewLifeVal,
+        wordOfAdvice: adviceVal,
+        sourceOfInspiration: inspirationVal,
+        maritalStatus: maritalVal,
+        favoriteCourse: courseVal || '',
+        asideCourse: careerVal || '',
+        photoUrl: m.avatar_url || m.photo_url || prev.photoUrl,
         photoZoom: 100,
         photoX: 0,
         photoY: 0
@@ -1159,7 +1200,21 @@ export default function FybFlyerGenerator() {
                       <UserCheck size={16} className="text-amber-500" />
                       <span>Auto-Fill from Registered FYBs & Executives</span>
                     </label>
-                    {loadingMembers && <span className="text-[10px] text-gray-400">Loading...</span>}
+                    <div className="flex items-center space-x-2">
+                      {loadingMembers ? (
+                        <span className="text-[10px] text-gray-400">Loading...</span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => fetchRegisteredMembers()}
+                          className="text-[10px] font-bold text-sky-700 hover:text-[#0A2540] flex items-center space-x-1 uppercase cursor-pointer"
+                          title="Refresh members list from database"
+                        >
+                          <RefreshCw size={11} />
+                          <span>Refresh List</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <select
                     value={selectedMemberId}
